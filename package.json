@@ -1,0 +1,46 @@
+{
+  "name": "cosmic-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.ts",
+  "keywords": [],
+  "author": "NandoFilter",
+  "license": "ISC",
+  "scripts": {
+    "dev": "tsnd -r tsconfig-paths/register --quiet --debug --inspect -- ./src/server.ts",
+    "pretty": "prettier --write \"./**/*.{js,ts,tsx,json}\"",
+    "knex:make": "knex --knexfile ./src/database/knex/Environment.ts migrate:make",
+    "knex:migrate": "knex --knexfile ./src/database/knex/Environment.ts migrate:latest",
+    "knex:rollback": "knex --knexfile ./src/database/knex/Environment.ts migrate:rollback",
+    "knex:rollback-all": "knex --knexfile ./src/database/knex/Environment.ts migrate:rollback --all"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "express": "^4.18.1",
+    "knex": "^2.2.0",
+    "mysql2": "^3.11.0",
+    "ts-node": "^10.8.2",
+    "ts-node-dev": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/knex": "^0.16.1",
+    "@types/node": "^18.19.44",
+    "@types/swagger-ui-express": "^4.1.6",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "dotenv": "^16.0.1",
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "prettier": "^3.3.0",
+    "rimraf": "^6.0.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.4.5"
+  }
+}
