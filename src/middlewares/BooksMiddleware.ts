@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Book } from '@/@types';
 import { HttpStatus } from '@/enums/HttpStatus';
 
-export default async function UsersMiddleware(req: Request, res: Response, next: NextFunction) {
+export default async function BooksMiddleware(req: Request, res: Response, next: NextFunction) {
   const value = req.body as any;
 
   if (value) {

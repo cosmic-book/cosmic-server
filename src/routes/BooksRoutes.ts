@@ -2,12 +2,12 @@ import { Router } from 'express';
 import { BooksController } from '@/controllers';
 import { BooksMiddleware } from '@/middlewares';
 
-const usersRoutes = Router();
+const booksRoutes = Router();
 
-usersRoutes.get('/books', BooksController.findAll);
-usersRoutes.get('/books/:id', BooksController.findById);
-usersRoutes.post('/books', BooksMiddleware, BooksController.add);
-usersRoutes.put('/books/:id', BooksMiddleware, BooksController.update);
-usersRoutes.delete('/books/:id', BooksController.delete);
+booksRoutes.get('/books', BooksController.findAll);
+booksRoutes.get('/books/:id', BooksController.findById);
+booksRoutes.post('/books', BooksMiddleware, BooksController.add);
+booksRoutes.put('/books/:id', BooksMiddleware, BooksController.update);
+booksRoutes.delete('/books/:id', BooksController.delete);
 
-export default usersRoutes;
+export default booksRoutes;

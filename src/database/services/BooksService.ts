@@ -1,13 +1,10 @@
 import { Book } from '@/@types';
 import { TableNames } from '../TableNames';
 import { Knex } from '../knex';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: '../../../.env' });
 
 const table = TableNames.books;
 
-export default class BookService {
+export default class BooksService {
   public static async getAll(): Promise<Book[]> {
     return Knex(table).select('*');
   }
@@ -19,9 +16,9 @@ export default class BookService {
   }
 
   public static async insert(book: Book): Promise<number | undefined> {
-    const [result] = await Knex(table).insert(book).returning('id');
+    const [result] = await Knex(table).insert(book);
 
-    return result.id || undefined;
+    return result || undefined;
   }
 
   public static async update(id: number, book: Book): Promise<number | undefined> {

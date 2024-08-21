@@ -3,7 +3,7 @@ import { BooksService } from '@/database/services';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../enums/HttpStatus';
 
-export default class UsersController {
+export default class BooksController {
   // GET: /books
   public static async findAll(req: Request, res: Response): Promise<Response<Book[]>> {
     const books = await BooksService.getAll();
