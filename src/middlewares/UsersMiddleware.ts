@@ -8,18 +8,18 @@ export default async function UsersMiddleware(req: Request, res: Response, next:
   if (value) {
     let { name, username, email, birthday, gender, password } = value as User;
 
-    const emailRegex = new RegExp('^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$', 'i');
+    const emailRegex = new RegExp('^[a-z0-9.]+@[a-z0-9]+.[a-z]+(.[a-z]+)?$', 'i');
 
     if (!name || !username || !email || !birthday || !gender || !password) {
       return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Informações inválidas' });
     }
 
-    if (username.trim().includes(" ")) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Nome de usuário não pode conter espaços' })
+    if (username.trim().includes(' ')) {
+      return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Nome de usuário inválido' });
     }
 
     if (!emailRegex.test(email)) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ error: 'E-mail inválido' })
+      return res.status(HttpStatus.BAD_REQUEST).json({ error: 'E-mail inválido' });
     }
 
     next();
