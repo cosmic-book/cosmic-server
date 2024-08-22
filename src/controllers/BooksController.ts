@@ -62,6 +62,6 @@ export default class BooksController {
 
     if (!result) return res.status(HttpStatus.NOT_FOUND).end();
 
-    return res.status(HttpStatus.OK);
+    return res.status(HttpStatus.OK).end();
   }
 }

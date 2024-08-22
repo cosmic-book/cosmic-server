@@ -8,7 +8,8 @@ export async function up(knex: Knex): Promise<void> {
     return knex.schema.createTable(TableNames.users, (table) => {
       table.increments('id').unsigned().primary(),
         table.string('name', 150).notNullable(),
-        table.string('nickname', 30).notNullable(),
+        table.string('username', 30).notNullable(),
+        table.string('email', 100).notNullable(),
         table.date('birthday').notNullable(),
         table.string('gender', 1).notNullable(),
         table.text('image'),
