@@ -6,6 +6,7 @@ const usersRoutes = Router();
 
 usersRoutes.get('/users', UsersController.findAll);
 usersRoutes.get('/users/:id', UsersController.findById);
+usersRoutes.post('/users/login', UsersController.login);
 usersRoutes.post('/users', UsersMiddleware, UsersController.add);
 usersRoutes.put('/users/:id', UsersMiddleware, UsersController.update);
 usersRoutes.delete('/users/:id', UsersController.delete);

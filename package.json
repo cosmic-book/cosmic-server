@@ -1,6 +1,6 @@
 {
   "name": "cosmic-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "server.ts",
   "author": "NandoFilter",
@@ -14,6 +14,8 @@
     "knex:rollback-all": "knex --knexfile ./src/database/knex/Environment.ts migrate:rollback --all"
   },
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",

@@ -2,6 +2,7 @@ import { User } from '@/@types';
 import { UsersService } from '@/database/services';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../enums/HttpStatus';
+import bcrypt from 'bcrypt';
 
 export default class UsersController {
   // GET: /users
@@ -24,9 +25,34 @@ export default class UsersController {
     return res.status(HttpStatus.OK).json(user);
   }
 
+  // POST: /users/login
+  public static async login(req: Request, res: Response): Promise<Response<User>> {
+    const { username, password } = req.body;
+
+    if (username && password) {
+      const user = await UsersService.getByUsername(username);
+
+      if (!user) return res.status(HttpStatus.NOT_FOUND).end();
+
+      const compare = await bcrypt.compare(password, user.password);
+
+      if (compare) return res.status(HttpStatus.OK).end();
+    }
+
+    return res.status(HttpStatus.BAD_REQUEST).end();
+  }
+
   // POST: /users
   public static async add(req: Request, res: Response): Promise<Response<User>> {
     const user: User = req.body;
+
+    const hasUsername = !!(await UsersService.getByUsername(user.username));
+
+    if (hasUsername) {
+      return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Username já existente' });
+    }
+
+    user.password = await bcrypt.hash(user.password, 10);
 
     const id = await UsersService.insert(user);
 
@@ -43,6 +69,8 @@ export default class UsersController {
   public static async update(req: Request, res: Response): Promise<Response<User>> {
     const { id } = req.params;
     const user: User = req.body;
+
+    user.password = await bcrypt.hash(user.password, 10);
 
     const result = await UsersService.update(parseInt(id), user);
 

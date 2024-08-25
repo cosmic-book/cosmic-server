@@ -15,14 +15,14 @@ export default class GendersService {
     return result || undefined;
   }
 
-  public static async insert(book: Gender): Promise<number | undefined> {
-    const [result] = await Knex(table).insert(book);
+  public static async insert(gender: Gender): Promise<number | undefined> {
+    const [result] = await Knex(table).insert(gender);
 
     return result || undefined;
   }
 
-  public static async update(id: number, book: Gender): Promise<number | undefined> {
-    const result = await Knex(table).update(book).where('id', id);
+  public static async update(id: number, gender: Gender): Promise<number | undefined> {
+    const result = await Knex(table).update(gender).where('id', id);
 
     return result || undefined;
   }

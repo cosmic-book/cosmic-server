@@ -10,19 +10,25 @@ export default class UsersService {
   }
 
   public static async getById(id: number): Promise<User | undefined> {
-    const [result] = await Knex(table).select('*').where('id', id);
+    const [result] = await Knex(table).select('*').where('id', id).limit(1);
 
     return result || undefined;
   }
 
-  public static async insert(book: User): Promise<number | undefined> {
-    const [result] = await Knex(table).insert(book);
+  public static async getByUsername(username: string): Promise<User | undefined> {
+    const [result] = await Knex(table).select('*').where('username', username).limit(1);
 
     return result || undefined;
   }
 
-  public static async update(id: number, book: User): Promise<number | undefined> {
-    const result = await Knex(table).update(book).where('id', id);
+  public static async insert(user: User): Promise<number | undefined> {
+    const [result] = await Knex(table).insert(user);
+
+    return result || undefined;
+  }
+
+  public static async update(id: number, user: User): Promise<number | undefined> {
+    const result = await Knex(table).update(user).where('id', id);
 
     return result || undefined;
   }
