@@ -3,6 +3,7 @@ import { UsersService } from '@/database/services';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../enums/HttpStatus';
 import bcrypt from 'bcrypt';
+import moment from 'moment';
 
 export default class UsersController {
   // GET: /users
@@ -36,7 +37,7 @@ export default class UsersController {
 
       const compare = await bcrypt.compare(password, user.password);
 
-      if (compare) return res.status(HttpStatus.OK).end();
+      if (compare) return res.status(HttpStatus.OK).json(user);
     }
 
     return res.status(HttpStatus.BAD_REQUEST).end();
@@ -52,6 +53,19 @@ export default class UsersController {
       return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Username já existente' });
     }
 
+    const hasEmail = !!(await UsersService.getByEmail(user.email));
+
+    if (hasEmail) {
+      return res.status(HttpStatus.BAD_REQUEST).json({ error: 'E-mail já em uso' });
+    }
+
+    var date = moment(user.birthday, 'DD/MM/YYYY').toDate();
+
+    if (date.toString() === 'Invalid Date') {
+      return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Data inválida' });
+    }
+
+    user.birthday = date;
     user.password = await bcrypt.hash(user.password, 10);
 
     const id = await UsersService.insert(user);

@@ -21,6 +21,12 @@ export default class UsersService {
     return result || undefined;
   }
 
+  public static async getByEmail(email: string): Promise<User | undefined> {
+    const [result] = await Knex(table).select('*').where('email', email).limit(1);
+
+    return result || undefined;
+  }
+
   public static async insert(user: User): Promise<number | undefined> {
     const [result] = await Knex(table).insert(user);
 
