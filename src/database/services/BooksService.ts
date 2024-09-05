@@ -5,12 +5,21 @@ import { Knex } from '../knex';
 const table = TableNames.books;
 
 export default class BooksService {
-  public static async getAll(): Promise<Book[]> {
-    return Knex(table).select('*');
+  public static async getAll(limit: string = '300'): Promise<Book[]> {
+    return Knex(table).select('*').limit(parseInt(limit));
   }
 
   public static async getById(id: number): Promise<Book | undefined> {
     const [result] = await Knex(table).select('*').where('id', id);
+
+    return result || undefined;
+  }
+
+  public static async getByISBN(book: Book): Promise<Book | undefined> {
+    const [result] = await Knex(table)
+      .select('*')
+      .where('isbn_13', book.isbn_13)
+      .orWhere('isbn_10', book.isbn_10);
 
     return result || undefined;
   }
