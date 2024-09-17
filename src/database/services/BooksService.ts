@@ -24,6 +24,15 @@ export default class BooksService {
     return result || undefined;
   }
 
+  public static async search(term: string): Promise<Partial<Book>[]> {
+    const result = await Knex(table)
+      .select('id', 'title', 'author', 'isbn_13', 'publisher', 'year', 'pages')
+      .where('title', 'like', `%${term}%`)
+      .orWhere('author', 'like', `%${term}%`);
+
+    return result;
+  }
+
   public static async insert(book: Book): Promise<number | undefined> {
     const [result] = await Knex(table).insert(book);
 

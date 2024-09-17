@@ -20,9 +20,29 @@ export default class BooksController {
     return res.status(HttpStatus.OK).json({ books, totalItems: books.length });
   }
 
+  // GET: /books/search/term
+  public static async search(req: Request, res: Response): Promise<Response<Partial<Book>[]>> {
+    const { term } = req.params;
+
+    if (!term) return res.status(HttpStatus.NO_CONTENT).end();
+
+    const books = await BooksService.search(term);
+
+    if (!books) return res.status(HttpStatus.NOT_FOUND).end();
+
+    books.forEach((book) => {
+      //book.cover = `https://www.googleapis.com/books/v1/volumes?q=isbn:${book.isbn_13}&key=${process.env.GOOGLE_BOOKS_API_KEY}`;
+      book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
+    });
+
+    return res.status(HttpStatus.OK).json(books);
+  }
+
   // GET: /books/1
   public static async findById(req: Request, res: Response): Promise<Response<Book>> {
     const { id } = req.params;
+
+    if (!id || !parseInt(id)) return res.status(HttpStatus.BAD_REQUEST).end();
 
     const book = await BooksService.getById(parseInt(id));
 

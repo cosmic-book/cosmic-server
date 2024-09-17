@@ -9,6 +9,7 @@ type Book = {
   description: string;
   language: string;
   publisher: string;
+  cover?: string;
 };
 
 export default Book;
