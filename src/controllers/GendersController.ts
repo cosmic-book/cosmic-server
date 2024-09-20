@@ -6,62 +6,118 @@ import { HttpStatus } from '../enums/HttpStatus';
 export default class GendersController {
   // GET: /genders
   public static async findAll(req: Request, res: Response): Promise<Response<Gender[]>> {
-    const genders = await GendersService.getAll();
+    try {
+      const genders = await GendersService.getAll();
 
-    if (!genders) return res.status(HttpStatus.NO_CONTENT).end();
+      if (!genders) {
+        return res.status(HttpStatus.NO_CONTENT).json({
+          message: 'Nenhum gênero encontrado'
+        });
+      }
 
-    return res.status(HttpStatus.OK).json(genders);
+      return res.status(HttpStatus.OK).json(genders);
+    } catch (err: unknown) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: (err as Error).message
+      });
+    }
   }
 
   // GET: /genders/1
   public static async findById(req: Request, res: Response): Promise<Response<Gender>> {
-    const { id } = req.params;
+    try {
+      const { id } = req.params;
 
-    const gender = await GendersService.getById(parseInt(id));
+      const gender = await GendersService.getById(parseInt(id));
 
-    if (!gender) return res.status(HttpStatus.NOT_FOUND).end();
+      if (!gender) {
+        return res.status(HttpStatus.NO_CONTENT).json({
+          message: 'Gênero não encontrado'
+        });
+      }
 
-    return res.status(HttpStatus.OK).json(gender);
+      return res.status(HttpStatus.OK).json(gender);
+    } catch (err: unknown) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: (err as Error).message
+      });
+    }
   }
 
   // POST: /genders
   public static async add(req: Request, res: Response): Promise<Response<Gender>> {
-    const gender: Gender = req.body;
+    try {
+      const gender: Gender = req.body;
 
-    const id = await GendersService.insert(gender);
+      const existingGender = await GendersService.getByName(gender.name);
 
-    if (id) {
-      gender.id = id;
+      if (existingGender) {
+        return res.status(HttpStatus.CONFLICT).json({
+          message: 'Gênero já cadastrado'
+        });
+      }
 
-      return res.status(HttpStatus.CREATED).json(gender);
+      const id = await GendersService.insert(gender);
+
+      if (id) {
+        gender.id = id;
+
+        return res.status(HttpStatus.CREATED).json(gender);
+      }
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Erro ao adicionar gênero'
+      });
+    } catch (err: unknown) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: (err as Error).message
+      });
     }
-
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).end();
   }
 
   // PUT: /genders/1
   public static async update(req: Request, res: Response): Promise<Response<Gender>> {
-    const { id } = req.params;
-    const gender: Gender = req.body;
+    try {
+      const { id } = req.params;
+      const gender: Gender = req.body;
 
-    const result = await GendersService.update(parseInt(id), gender);
+      const result = await GendersService.update(parseInt(id), gender);
 
-    if (result) {
-      gender.id = parseInt(id);
-      return res.status(HttpStatus.OK).json(gender);
+      if (result) {
+        gender.id = parseInt(id);
+        return res.status(HttpStatus.OK).json(gender);
+      }
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Erro ao atualizar gênero'
+      });
+    } catch (err: unknown) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: (err as Error).message
+      });
     }
-
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).end();
   }
 
   // DELETE: /genders/1
   public static async delete(req: Request, res: Response): Promise<Response<Gender>> {
-    const { id } = req.params;
+    try {
+      const { id } = req.params;
 
-    const result = await GendersService.delete(parseInt(id));
+      const result = await GendersService.delete(parseInt(id));
 
-    if (!result) return res.status(HttpStatus.NOT_FOUND).end();
+      if (!result) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          message: 'Gênero não encontrado'
+        });
+      }
 
-    return res.status(HttpStatus.OK).end();
+      return res.status(HttpStatus.OK).json({
+        message: 'Gênero deletado com sucesso'
+      });
+    } catch (err: unknown) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: (err as Error).message
+      });
+    }
   }
 }

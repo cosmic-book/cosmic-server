@@ -1,13 +1,13 @@
-import { Router } from 'express';
 import { GendersController } from '@/controllers';
 import { GendersMiddleware } from '@/middlewares';
+import { Router } from 'express';
 
-const gendersRoutes = Router();
+const route = Router();
 
-gendersRoutes.get('/genders', GendersController.findAll);
-gendersRoutes.get('/genders/:id', GendersController.findById);
-gendersRoutes.post('/genders', GendersMiddleware, GendersController.add);
-gendersRoutes.put('/genders/:id', GendersMiddleware, GendersController.update);
-gendersRoutes.delete('/genders/:id', GendersController.delete);
+route.get('/', GendersController.findAll);
+route.get('/:id', GendersController.findById);
+route.post('/', GendersMiddleware, GendersController.add);
+route.put('/:id', GendersMiddleware, GendersController.update);
+route.delete('/:id', GendersController.delete);
 
-export default gendersRoutes;
+export default route;

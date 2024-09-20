@@ -16,15 +16,12 @@ export default class BooksService {
   }
 
   public static async getByISBN(book: Book): Promise<Book | undefined> {
-    const [result] = await Knex(table)
-      .select('*')
-      .where('isbn_13', book.isbn_13)
-      .orWhere('isbn_10', book.isbn_10);
+    const [result] = await Knex(table).select('*').where('isbn_13', book.isbn_13).orWhere('isbn_10', book.isbn_10);
 
     return result || undefined;
   }
 
-  public static async search(term: string): Promise<Partial<Book>[]> {
+  public static async search(term?: string): Promise<Partial<Book>[]> {
     const result = await Knex(table)
       .select('id', 'title', 'author', 'isbn_13', 'publisher', 'year', 'pages')
       .where('title', 'like', `%${term}%`)

@@ -15,6 +15,12 @@ export default class GendersService {
     return result || undefined;
   }
 
+  public static async getByName(name: string): Promise<Gender | undefined> {
+    const [result] = await Knex(table).select('*').where('name', '=', name);
+
+    return result || undefined;
+  }
+
   public static async insert(gender: Gender): Promise<number | undefined> {
     const [result] = await Knex(table).insert(gender);
 

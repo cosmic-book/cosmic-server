@@ -1,14 +1,14 @@
-import { Router } from 'express';
 import { UsersController } from '@/controllers';
 import { UsersMiddleware } from '@/middlewares';
+import { Router } from 'express';
 
-const usersRoutes = Router();
+const route = Router();
 
-usersRoutes.get('/users', UsersController.findAll);
-usersRoutes.get('/users/:id', UsersController.findById);
-usersRoutes.post('/users/login', UsersController.login);
-usersRoutes.post('/users', UsersMiddleware, UsersController.add);
-usersRoutes.put('/users/:id', UsersMiddleware, UsersController.update);
-usersRoutes.delete('/users/:id', UsersController.delete);
+route.get('/', UsersController.findAll);
+route.get('/:id', UsersController.findById);
+route.post('/login', UsersController.login);
+route.post('/', UsersMiddleware, UsersController.add);
+route.put('/:id', UsersMiddleware, UsersController.update);
+route.delete('/:id', UsersController.delete);
 
-export default usersRoutes;
+export default route;

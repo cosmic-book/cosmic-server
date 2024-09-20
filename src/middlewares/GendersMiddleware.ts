@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
 import { Gender } from '@/@types';
 import { HttpStatus } from '@/enums/HttpStatus';
+import { NextFunction, Request, Response } from 'express';
 
 export default async function GendersMiddleware(req: Request, res: Response, next: NextFunction) {
   const value = req.body as any;
@@ -9,7 +9,9 @@ export default async function GendersMiddleware(req: Request, res: Response, nex
     let { name } = value as Gender;
 
     if (!name) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Informações inválidas' });
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Informações inválidas'
+      });
     }
 
     next();

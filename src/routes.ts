@@ -5,8 +5,8 @@ import UsersRoutes from '@/routes/UsersRoutes';
 
 const routes = Router();
 
-routes.use(BooksRoutes);
-routes.use(GendersRoutes);
-routes.use(UsersRoutes);
+routes.use('/books', BooksRoutes);
+routes.use('/genders', GendersRoutes);
+routes.use('/users', UsersRoutes);
 
 export default routes;
