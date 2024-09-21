@@ -62,7 +62,13 @@ export default class UsersController {
 
         const compare = await bcrypt.compare(password, user.password);
 
-        if (compare) return res.status(HttpStatus.OK).json(user);
+        if (!compare) {
+          return res.status(HttpStatus.CONFLICT).json({
+            message: 'Senha inválida'
+          });
+        }
+
+        return res.status(HttpStatus.OK).json(user);
       }
 
       return res.status(HttpStatus.BAD_REQUEST).end();
