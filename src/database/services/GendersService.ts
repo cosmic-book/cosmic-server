@@ -16,7 +16,7 @@ export default class GendersService {
   }
 
   public static async getByName(name: string): Promise<Gender | undefined> {
-    const [result] = await Knex(table).select('*').where('name', '=', name);
+    const [result] = await Knex(table).select('*').where('name', '=', name.trim());
 
     return result || undefined;
   }

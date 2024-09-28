@@ -8,7 +8,6 @@ route.get('/', BooksController.findAll);
 route.get('/search', BooksController.search);
 route.get('/:id', BooksController.findById);
 route.post('/', BooksMiddleware, BooksController.add);
-route.post('/all', BooksController.addAll);
 route.put('/:id', BooksMiddleware, BooksController.update);
 route.delete('/:id', BooksController.delete);
 

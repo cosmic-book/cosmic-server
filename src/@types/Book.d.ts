@@ -8,6 +8,7 @@ type Book = {
   isbn_10?: string;
   description: string;
   language: string;
+  gender?: string;
   publisher: string;
   cover?: string;
 };

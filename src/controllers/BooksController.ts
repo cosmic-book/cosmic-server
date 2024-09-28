@@ -115,58 +115,6 @@ export default class BooksController {
     }
   }
 
-  // POST: /books/all
-  public static async addAll(req: Request, res: Response): Promise<Response<Book>> {
-    try {
-      const books: Book[] = [];
-
-      const data: any[] = JSON.parse(await readFile('./src/json/data.json', 'utf8'));
-
-      for (const item of data) {
-        const book: Book = {
-          id: 0,
-          title: item.titulo,
-          author: item.autor,
-          year: item.ano,
-          pages: item.paginas,
-          isbn_13: item.ISBN_13,
-          isbn_10: item.ISBN_10,
-          description: item.descricao?.toString() || '',
-          language: item.idioma,
-          publisher: item.editora
-        };
-
-        const exists = await BooksService.getByISBN(book);
-
-        if (exists) continue;
-
-        try {
-          const id = await BooksService.insert(book);
-
-          if (id) {
-            book.id = id;
-            books.push(book);
-          }
-        } catch (error) {
-          console.log('Erro ao adicionar o livro com ISBN_13:', book.isbn_13);
-          continue;
-        }
-      }
-
-      if (books.length > 0) {
-        return res.status(HttpStatus.CREATED).json(books);
-      }
-
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao inserir livros'
-      });
-    } catch (err: unknown) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: (err as Error).message
-      });
-    }
-  }
-
   // PUT: /books/1
   public static async update(req: Request, res: Response): Promise<Response<Book>> {
     try {
