@@ -23,7 +23,7 @@ export default class BooksService {
 
   public static async search(term?: string): Promise<Partial<Book>[]> {
     const result = await Knex(table)
-      .select('id', 'title', 'author', 'isbn_13', 'publisher', 'year', 'pages')
+      .select('*')
       .where('title', 'like', `%${term}%`)
       .orWhere('author', 'like', `%${term}%`);
 

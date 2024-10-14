@@ -23,6 +23,41 @@ export default class GendersController {
     }
   }
 
+  // GET: /genders/names?ids=1,2,3
+  public static async getGendersName(req: Request, res: Response): Promise<Response<Gender>> {
+    try {
+      let { ids } = req.query;
+
+      if (ids) {
+        ids = ids.toString().split(',');
+
+        let names: string[] = [];
+
+        for (const id of ids) {
+          const gender = await GendersService.getById(parseInt(id));
+
+          if (!gender) {
+            return res.status(HttpStatus.NO_CONTENT).json({
+              message: 'Gênero não encontrado'
+            });
+          }
+
+          names.push(gender.name);
+        }
+
+        return res.status(HttpStatus.OK).json(names);
+      }
+
+      return res.status(HttpStatus.NO_CONTENT).json({
+        message: 'Erro ao encontrar gêneros'
+      });
+    } catch (err: unknown) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: (err as Error).message
+      });
+    }
+  }
+
   // GET: /genders/1
   public static async findById(req: Request, res: Response): Promise<Response<Gender>> {
     try {

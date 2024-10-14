@@ -1,8 +1,7 @@
 import { Book } from '@/@types';
-import { BooksService } from '@/database/services';
+import { BooksService, RefBookGendersService } from '@/database/services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
-import { readFile } from 'fs/promises';
 
 interface IBookData {
   term?: string;
@@ -35,16 +34,20 @@ export default class BooksController {
   }
 
   // GET: /books/search
-  public static async search(req: Request<IBookData>, res: Response): Promise<Response<Partial<Book>[]>> {
+  public static async search(req: Request<IBookData>, res: Response): Promise<Response<Book[]>> {
     try {
       const { term } = req.query;
 
       const books = await BooksService.search(term?.toString());
 
-      books.forEach((book) => {
+      for (const book of books) {
+        if (book.id) {
+          book.genders = await RefBookGendersService.getByBook(book.id);
+        }
+
         //book.cover = `https://www.googleapis.com/books/v1/volumes?q=isbn:${book.isbn_13}&key=${process.env.GOOGLE_BOOKS_API_KEY}`;
         book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
-      });
+      }
 
       return res.status(HttpStatus.OK).json({
         books,
