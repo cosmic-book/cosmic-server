@@ -63,6 +63,12 @@ export default class GendersController {
     try {
       const { id } = req.params;
 
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
+
       const gender = await GendersService.getById(parseInt(id));
 
       if (!gender) {
@@ -116,6 +122,12 @@ export default class GendersController {
       const { id } = req.params;
       const gender: Gender = req.body;
 
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
+
       const result = await GendersService.update(parseInt(id), gender);
 
       if (result) {
@@ -137,6 +149,12 @@ export default class GendersController {
   public static async delete(req: Request, res: Response): Promise<Response<Gender>> {
     try {
       const { id } = req.params;
+
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
 
       const result = await GendersService.delete(parseInt(id));
 

@@ -124,6 +124,12 @@ export default class BooksController {
       const { id } = req.params;
       const book: Book = req.body;
 
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
+
       const result = await BooksService.update(parseInt(id), book);
 
       if (result) {
@@ -145,6 +151,12 @@ export default class BooksController {
   public static async delete(req: Request, res: Response): Promise<Response<Book>> {
     try {
       const { id } = req.params;
+
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
 
       const result = await BooksService.delete(parseInt(id));
 

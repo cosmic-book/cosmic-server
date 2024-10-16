@@ -30,6 +30,12 @@ export default class UsersController {
     try {
       const { id } = req.params;
 
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
+
       const user = await UsersService.getById(parseInt(id));
 
       if (!user) {
@@ -135,6 +141,12 @@ export default class UsersController {
       const { id } = req.params;
       const user: User = req.body;
 
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
+
       user.password = await bcrypt.hash(user.password, 10);
 
       const result = await UsersService.update(parseInt(id), user);
@@ -158,6 +170,12 @@ export default class UsersController {
   public static async delete(req: Request, res: Response): Promise<Response<User>> {
     try {
       const { id } = req.params;
+
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
 
       const result = await UsersService.delete(parseInt(id));
 
