@@ -8,16 +8,8 @@ export async function up(knex: Knex): Promise<void> {
     return knex.schema.createTable(TableNames.refUserGenders, (table) => {
       table.integer('id_user').unsigned().notNullable(),
         table.integer('id_gender').unsigned().notNullable(),
-        table
-          .foreign('id_user', 'fk_idUser')
-          .references('id')
-          .inTable(TableNames.users)
-          .onDelete('CASCADE'),
-        table
-          .foreign('id_gender', 'fk_idUserGender')
-          .references('id')
-          .inTable(TableNames.genders)
-          .onDelete('CASCADE');
+        table.foreign('id_user', 'fk_idUser').references('id').inTable(TableNames.users).onDelete('CASCADE'),
+        table.foreign('id_gender', 'fk_idUserGender').references('id').inTable(TableNames.genders).onDelete('CASCADE');
     });
   }
 }
