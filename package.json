@@ -1,6 +1,6 @@
 {
   "name": "cosmic-server",
-  "version": "1.0.8",
+  "version": "1.0.12",
   "description": "",
   "main": "server.ts",
   "author": "NandoFilter",
@@ -20,6 +20,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "express": "^4.18.1",
+    "jsonwebtoken": "^9.0.2",
     "knex": "^2.2.0",
     "moment": "^2.30.1",
     "mysql2": "^3.11.0",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/knex": "^0.16.1",
     "@types/node": "^18.19.44",
     "@types/swagger-ui-express": "^4.1.6",

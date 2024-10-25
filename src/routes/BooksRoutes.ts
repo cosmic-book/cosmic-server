@@ -1,8 +1,10 @@
 import { BooksController } from '@/controllers';
-import { BooksMiddleware } from '@/middlewares';
+import { AuthMiddleware, BooksMiddleware } from '@/middlewares';
 import { Router } from 'express';
 
 const route = Router();
+
+route.use(AuthMiddleware);
 
 route.get('/', BooksController.findAll);
 route.get('/search', BooksController.search);

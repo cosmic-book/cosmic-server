@@ -1,8 +1,10 @@
 import { ReadingsController } from '@/controllers';
-import { ReadingsMiddleware } from '@/middlewares';
+import { AuthMiddleware, ReadingsMiddleware } from '@/middlewares';
 import { Router } from 'express';
 
 const route = Router();
+
+route.use(AuthMiddleware);
 
 route.get('/', ReadingsController.findAll);
 route.get('/:id', ReadingsController.findById);

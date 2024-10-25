@@ -52,39 +52,6 @@ export default class UsersController {
     }
   }
 
-  // POST: /users/login
-  public static async login(req: Request, res: Response): Promise<Response<User>> {
-    try {
-      const { username, password } = req.body;
-
-      if (username && password) {
-        const user = await UsersService.getByUsername(username);
-
-        if (!user) {
-          return res.status(HttpStatus.NOT_FOUND).json({
-            message: 'Usuário não encontrado'
-          });
-        }
-
-        const compare = await bcrypt.compare(password, user.password);
-
-        if (!compare) {
-          return res.status(HttpStatus.CONFLICT).json({
-            message: 'Senha inválida'
-          });
-        }
-
-        return res.status(HttpStatus.OK).json(user);
-      }
-
-      return res.status(HttpStatus.BAD_REQUEST).end();
-    } catch (err: unknown) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: (err as Error).message
-      });
-    }
-  }
-
   // POST: /users
   public static async add(req: Request, res: Response): Promise<Response<User>> {
     try {
@@ -144,6 +111,14 @@ export default class UsersController {
       if (!id || !parseInt(id)) {
         return res.status(HttpStatus.BAD_REQUEST).json({
           message: 'Parâmetro inválido'
+        });
+      }
+
+      const hasUsername = !!(await UsersService.getByUsername(user.username));
+
+      if (hasUsername) {
+        return res.status(HttpStatus.CONFLICT).json({
+          message: 'Nome de usuário já existente'
         });
       }
 

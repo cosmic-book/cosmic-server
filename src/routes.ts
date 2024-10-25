@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import AuthRoutes from '@/routes/AuthRoutes';
 import BooksRoutes from '@/routes/BooksRoutes';
 import GendersRoutes from '@/routes/GendersRoutes';
 import ReadingsRoutes from '@/routes/ReadingsRoutes';
@@ -6,6 +7,7 @@ import UsersRoutes from '@/routes/UsersRoutes';
 
 const routes = Router();
 
+routes.use('/auth', AuthRoutes);
 routes.use('/books', BooksRoutes);
 routes.use('/genders', GendersRoutes);
 routes.use('/readings', ReadingsRoutes);

@@ -1,8 +1,10 @@
 import { GendersController } from '@/controllers';
-import { GendersMiddleware } from '@/middlewares';
+import { AuthMiddleware, GendersMiddleware } from '@/middlewares';
 import { Router } from 'express';
 
 const route = Router();
+
+route.use(AuthMiddleware);
 
 route.get('/', GendersController.findAll);
 route.get('/names', GendersController.getGendersName);
