@@ -28,9 +28,9 @@ export default class AuthController {
           });
         }
 
-        const token = generateToken(user);
+        const { token, exp } = generateToken(user);
 
-        return res.status(HttpStatus.OK).json(token);
+        return res.status(HttpStatus.OK).json({ token, exp, user });
       }
 
       return res.status(HttpStatus.BAD_REQUEST).end();

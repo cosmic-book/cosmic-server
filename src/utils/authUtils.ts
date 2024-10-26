@@ -1,6 +1,11 @@
 import { User } from '@/@types';
 import jwt from 'jsonwebtoken';
 
+interface IToken {
+  token: string;
+  exp: Date;
+}
+
 export function checkToken(token: string): boolean {
   try {
     const secret = process.env.SECRET_KEY;
@@ -13,11 +18,11 @@ export function checkToken(token: string): boolean {
   }
 }
 
-export function generateToken(user: User): object {
+export function generateToken(user: User): IToken {
   try {
     const secret = process.env.SECRET_KEY;
 
-    let result = {
+    let result: IToken = {
       token: '',
       exp: new Date(Date.now() + 1 * 60 * 60 * 1000) // 1 hour
     };

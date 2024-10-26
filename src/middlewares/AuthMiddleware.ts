@@ -14,11 +14,11 @@ export default async function AuthMiddleware(req: Request, res: Response, next: 
   const token = req.headers.authorization?.split(' ')[1];
 
   if (!token) {
-    return res.status(HttpStatus.NOT_FOUND).json({ error: 'Credenciais não encontradas' });
+    return res.status(HttpStatus.NOT_FOUND).json({ message: 'Credenciais não encontradas' });
   }
 
   if (!checkToken(token)) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Credenciais inválidas' });
+    return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Credenciais inválidas' });
   }
 
   next();
