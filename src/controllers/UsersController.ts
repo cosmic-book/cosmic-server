@@ -122,8 +122,6 @@ export default class UsersController {
         });
       }
 
-      user.password = await bcrypt.hash(user.password, 10);
-
       const result = await UsersService.update(parseInt(id), user);
 
       if (result) {
@@ -139,6 +137,24 @@ export default class UsersController {
         message: (err as Error).message
       });
     }
+  }
+
+  // PUT: /users/password/1
+  public static async changePassword(req: Request, res: Response): Promise<Response<User>> {
+    const { id } = req.params;
+    let { newPassword } = req.body;
+
+    newPassword = await bcrypt.hash(newPassword, 10);
+
+    const user = await UsersService.getById(parseInt(id));
+    const data = await UsersService.updatePassword(parseInt(id), newPassword);
+
+    if (user && data) {
+      user.password = newPassword;
+      return res.status(HttpStatus.OK).json(user);
+    }
+
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).end();
   }
 
   // DELETE: /users/1

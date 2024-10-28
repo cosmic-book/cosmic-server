@@ -39,6 +39,12 @@ export default class UsersService {
     return result || undefined;
   }
 
+  public static async updatePassword(id: number, newPassword: string): Promise<number | undefined> {
+    const result = await Knex(table).where('id', id).update({ password: newPassword });
+
+    return result || undefined;
+  }
+
   public static async delete(id: number): Promise<number | undefined> {
     const result = await Knex(table).delete().where('id', id);
 
