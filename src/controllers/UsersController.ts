@@ -114,13 +114,13 @@ export default class UsersController {
         });
       }
 
-      const hasUsername = !!(await UsersService.getByUsername(user.username));
+      // const hasUsername = !!(await UsersService.getByUsername(user.username));
 
-      if (hasUsername) {
-        return res.status(HttpStatus.CONFLICT).json({
-          message: 'Nome de usuário já existente'
-        });
-      }
+      // if (hasUsername) {
+      //   return res.status(HttpStatus.CONFLICT).json({
+      //     message: 'Nome de usuário já existente'
+      //   });
+      // }
 
       const result = await UsersService.update(parseInt(id), user);
 

@@ -10,13 +10,13 @@ export default async function UsersMiddleware(req: Request, res: Response, next:
 
     const emailRegex = new RegExp('^[a-z0-9.]+@[a-z0-9]+.[a-z]+(.[a-z]+)?$', 'i');
 
-    if (!name || !username || !email || !birthday || !gender) {
+    if (!name || !email || !birthday || !gender) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });
     }
 
-    if (username.trim().includes(' ')) {
+    if (username && username.trim().includes(' ')) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Nome de usuário não pode conter espaços'
       });
