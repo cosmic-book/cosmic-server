@@ -73,15 +73,6 @@ export default class UsersController {
         });
       }
 
-      var date = moment(user.birthday, 'DD/MM/YYYY').toDate();
-
-      if (date.toString() === 'Invalid Date') {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Data inválida'
-        });
-      }
-
-      user.birthday = date;
       user.password = await bcrypt.hash(user.password, 10);
 
       const id = await UsersService.insert(user);
@@ -113,14 +104,6 @@ export default class UsersController {
           message: 'Parâmetro inválido'
         });
       }
-
-      // const hasUsername = !!(await UsersService.getByUsername(user.username));
-
-      // if (hasUsername) {
-      //   return res.status(HttpStatus.CONFLICT).json({
-      //     message: 'Nome de usuário já existente'
-      //   });
-      // }
 
       const result = await UsersService.update(parseInt(id), user);
 

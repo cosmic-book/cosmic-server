@@ -1,6 +1,7 @@
 import { User } from '@/@types';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
+import moment from 'moment';
 
 export default async function UsersMiddleware(req: Request, res: Response, next: NextFunction) {
   const value = req.body as any;
@@ -28,7 +29,7 @@ export default async function UsersMiddleware(req: Request, res: Response, next:
       });
     }
 
-    if (birthday.toString().length !== 10) {
+    if (!isDateValid(birthday)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Data inválida'
       });
@@ -45,3 +46,14 @@ export default async function UsersMiddleware(req: Request, res: Response, next:
     return res.status(HttpStatus.NOT_FOUND).end();
   }
 }
+
+const isDateValid = (date: Date): boolean => {
+  const today = moment().startOf('day');
+  const maxBirthday = moment().subtract(120, 'years').startOf('day');
+
+  const formattedDate = moment(date).format('YYYY-MM-DD');
+
+  const dateLength = formattedDate.length === 10;
+
+  return dateLength && moment(formattedDate).isBefore(today) && moment(formattedDate).isSameOrAfter(maxBirthday);
+};
