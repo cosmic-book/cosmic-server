@@ -1,16 +1,18 @@
-import { ItemType, OwnershipStatus, ReadingStatus } from '@/enums';
+import { ReadingCategory, ReadingStatus, ReadingType } from '@/enums';
 
 type Reading = {
   id: number;
   id_user: number;
   id_book: number;
   status: ReadingStatus;
-  type: ItemType;
-  ownership: OwnershipStatus;
+  type: ReadingType;
+  category: ReadingCategory;
   readPages?: number;
   rating?: number;
   review?: string;
   like?: boolean;
+  start_date?: Date;
+  finish_date?: Date;
 };
 
 export default Reading;

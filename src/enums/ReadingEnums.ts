@@ -3,19 +3,19 @@ enum ReadingStatus {
   READING,
   FINISHED,
   REREADING,
-  ABBANDONED
+  ABANDONED
 }
 
-enum ItemType {
+enum ReadingCategory {
   BOOK,
   COMIC,
-  MANGA
+  MAGAZINE
 }
 
-enum OwnershipStatus {
-  WANTED,
-  OWNED,
-  EXCHANGE
+enum ReadingType {
+  PRINTED,
+  DIGITAL,
+  AUDIO
 }
 
-export { ReadingStatus, ItemType, OwnershipStatus };
+export { ReadingCategory, ReadingStatus, ReadingType };

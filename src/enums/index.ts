@@ -1,2 +1,3 @@
-export { ItemType, OwnershipStatus, ReadingStatus } from './ReadingEnums';
+export { Gender } from './Gender';
+export { ReadingCategory, ReadingStatus, ReadingType } from './ReadingEnums';
 export { HttpStatus } from './HttpStatus';

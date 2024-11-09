@@ -2,7 +2,6 @@ import { User } from '@/@types';
 import { UsersService } from '@/database/services';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import moment from 'moment';
 import { HttpStatus } from '../enums/HttpStatus';
 
 export default class UsersController {
