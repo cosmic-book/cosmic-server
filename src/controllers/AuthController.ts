@@ -1,13 +1,13 @@
-import { User } from '@/@types';
+import { TUser } from '@/@types';
 import { UsersService } from '@/database/services';
 import { generateToken } from '@/utils/authUtils';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../enums/HttpStatus';
 
-export default class AuthController {
+export class AuthController {
   // POST: /auth/login
-  public static async login(req: Request, res: Response): Promise<Response<User>> {
+  public static async login(req: Request, res: Response): Promise<Response<void>> {
     try {
       const { username, password } = req.body;
 

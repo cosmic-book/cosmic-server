@@ -1,4 +1,4 @@
-import { Book } from '@/@types';
+import { TBook } from '@/@types';
 import { BooksService, RefBookGendersService } from '@/database/services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
@@ -8,9 +8,9 @@ interface IBookData {
   limit?: string;
 }
 
-export default class BooksController {
+export class BooksController {
   // GET: /books
-  public static async findAll(req: Request<IBookData>, res: Response): Promise<Response<Book[]>> {
+  public static async findAll(req: Request<IBookData>, res: Response): Promise<Response<TBook[]>> {
     try {
       const { limit } = req.query;
 
@@ -34,7 +34,7 @@ export default class BooksController {
   }
 
   // GET: /books/search
-  public static async search(req: Request<IBookData>, res: Response): Promise<Response<Book[]>> {
+  public static async search(req: Request<IBookData>, res: Response): Promise<Response<TBook[]>> {
     try {
       const { term } = req.query;
 
@@ -61,7 +61,7 @@ export default class BooksController {
   }
 
   // GET: /books/1
-  public static async findById(req: Request, res: Response): Promise<Response<Book>> {
+  public static async findById(req: Request, res: Response): Promise<Response<TBook>> {
     try {
       const { id } = req.params;
 
@@ -88,9 +88,9 @@ export default class BooksController {
   }
 
   // POST: /books
-  public static async add(req: Request, res: Response): Promise<Response<Book>> {
+  public static async add(req: Request, res: Response): Promise<Response<TBook>> {
     try {
-      const book: Book = req.body;
+      const book: TBook = req.body;
 
       const existingBook = await BooksService.getByISBN(book);
 
@@ -119,10 +119,10 @@ export default class BooksController {
   }
 
   // PUT: /books/1
-  public static async update(req: Request, res: Response): Promise<Response<Book>> {
+  public static async update(req: Request, res: Response): Promise<Response<TBook>> {
     try {
       const { id } = req.params;
-      const book: Book = req.body;
+      const book: TBook = req.body;
 
       if (!id || !parseInt(id)) {
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -148,7 +148,7 @@ export default class BooksController {
   }
 
   // DELETE: /books/1
-  public static async delete(req: Request, res: Response): Promise<Response<Book>> {
+  public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
       const { id } = req.params;
 

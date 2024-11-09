@@ -1,12 +1,12 @@
-import { Gender } from '@/@types';
+import { TGender } from '@/@types';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
 
-export default async function GendersMiddleware(req: Request, res: Response, next: NextFunction) {
-  const value = req.body as any;
+export async function GendersMiddleware(req: Request, res: Response, next: NextFunction) {
+  const value: TGender = req.body;
 
   if (value) {
-    let { name } = value as Gender;
+    let { name } = value;
 
     if (!name) {
       return res.status(HttpStatus.BAD_REQUEST).json({

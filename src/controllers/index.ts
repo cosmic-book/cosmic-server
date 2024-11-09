@@ -1,5 +1,5 @@
-export { default as AuthController } from './AuthController';
-export { default as BooksController } from './BooksController';
-export { default as GendersController } from './GendersController';
-export { default as ReadingsController } from './ReadingsController';
-export { default as UsersController } from './UsersController';
+export { AuthController } from './AuthController';
+export { BooksController } from './BooksController';
+export { GendersController } from './GendersController';
+export { ReadingsController } from './ReadingsController';
+export { UsersController } from './UsersController';

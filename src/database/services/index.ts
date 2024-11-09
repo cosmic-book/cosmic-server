@@ -1,5 +1,5 @@
-export { default as BooksService } from './BooksService';
-export { default as GendersService } from './GendersService';
-export { default as ReadingsService } from './ReadingsService';
-export { default as RefBookGendersService } from './RefBookGendersService';
-export { default as UsersService } from './UsersService';
+export { BooksService } from './BooksService';
+export { GendersService } from './GendersService';
+export { ReadingsService } from './ReadingsService';
+export { RefBookGendersService } from './RefBookGendersService';
+export { UsersService } from './UsersService';

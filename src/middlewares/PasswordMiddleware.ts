@@ -3,7 +3,7 @@ import { HttpStatus } from '@/enums/HttpStatus';
 import { UsersService } from '@/database/services';
 import bcrypt from 'bcrypt';
 
-export default async function PasswordMiddleware(req: Request, res: Response, next: NextFunction) {
+export async function PasswordMiddleware(req: Request, res: Response, next: NextFunction) {
   const { id } = req.params;
   let { password, newPassword, confirmPass } = req.body;
 

@@ -1,4 +1,4 @@
-import { User } from '@/@types';
+import { TUser } from '@/@types';
 import jwt from 'jsonwebtoken';
 
 interface IToken {
@@ -18,7 +18,7 @@ export function checkToken(token: string): boolean {
   }
 }
 
-export function generateToken(user: User): IToken {
+export function generateToken(user: TUser): IToken {
   try {
     const secret = process.env.SECRET_KEY;
 

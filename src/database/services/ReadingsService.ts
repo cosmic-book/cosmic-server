@@ -1,27 +1,27 @@
-import { Reading } from '@/@types';
+import { TReading } from '@/@types';
 import { TableNames } from '../TableNames';
 import { Knex } from '../knex';
 
 const table = TableNames.readings;
 
-export default class ReadingsService {
-  public static async getAll(limit: string = '300'): Promise<Reading[]> {
+export class ReadingsService {
+  public static async getAll(limit: string = '300'): Promise<TReading[]> {
     return Knex(table).select('*').limit(parseInt(limit));
   }
 
-  public static async getById(id: number): Promise<Reading | undefined> {
+  public static async getById(id: number): Promise<TReading | undefined> {
     const [result] = await Knex(table).select('*').where('id', id);
 
     return result || undefined;
   }
 
-  public static async insert(reading: Reading): Promise<number | undefined> {
+  public static async insert(reading: TReading): Promise<number | undefined> {
     const [result] = await Knex(table).insert(reading);
 
     return result || undefined;
   }
 
-  public static async update(id: number, reading: Reading): Promise<number | undefined> {
+  public static async update(id: number, reading: TReading): Promise<number | undefined> {
     const result = await Knex(table).update(reading).where('id', id);
 
     return result || undefined;

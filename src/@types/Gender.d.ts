@@ -1,6 +1,4 @@
-type Gender = {
+export type TGender = {
   id: number;
   name: string;
 };
-
-export default Gender;

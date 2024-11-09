@@ -5,7 +5,7 @@ import { readFile } from 'fs/promises';
 import { BooksService, GendersService, RefBookGendersService } from '../services';
 import { join } from 'path';
 
-type RefBookGender = {
+export type RefBookGender = {
   id_book: number;
   id_gender: number;
 };

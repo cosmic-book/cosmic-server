@@ -1,4 +1,4 @@
-type Book = {
+export type TBook = {
   id: number;
   title: string;
   author?: string;
@@ -12,5 +12,3 @@ type Book = {
   publisher: string;
   cover?: string;
 };
-
-export default Book;

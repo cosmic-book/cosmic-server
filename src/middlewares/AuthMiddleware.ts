@@ -2,7 +2,7 @@ import { HttpStatus } from '@/enums/HttpStatus';
 import { checkToken } from '@/utils/authUtils';
 import { NextFunction, Request, Response } from 'express';
 
-export default async function AuthMiddleware(req: Request, res: Response, next: NextFunction) {
+export async function AuthMiddleware(req: Request, res: Response, next: NextFunction) {
   const nonAuthPath = [{ url: '/users', method: 'POST' }];
 
   const path = nonAuthPath.find((p) => {

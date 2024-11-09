@@ -1,6 +1,6 @@
-export { default as Book } from './Book';
-export { default as Gender } from './Gender';
-export { default as Reading } from './Reading';
-export { default as RefBookGender } from './RefBookGender';
-export { default as RefUserGender } from './RefUserGender';
-export { default as User } from './User';
+export { TBook } from './Book';
+export { TGender } from './Gender';
+export { TReading } from './Reading';
+export { TRefBookGender } from './RefBookGender';
+export { TRefUserGender } from './RefUserGender';
+export { TUser } from './User';

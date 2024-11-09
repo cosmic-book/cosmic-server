@@ -1,27 +1,27 @@
-import { Book } from '@/@types';
+import { TBook } from '@/@types';
 import { TableNames } from '../TableNames';
 import { Knex } from '../knex';
 
 const table = TableNames.books;
 
-export default class BooksService {
-  public static async getAll(limit: string = '300'): Promise<Book[]> {
+export class BooksService {
+  public static async getAll(limit: string = '300'): Promise<TBook[]> {
     return Knex(table).select('*').limit(parseInt(limit));
   }
 
-  public static async getById(id: number): Promise<Book | undefined> {
+  public static async getById(id: number): Promise<TBook | undefined> {
     const [result] = await Knex(table).select('*').where('id', id);
 
     return result || undefined;
   }
 
-  public static async getByISBN(book: Book): Promise<Book | undefined> {
+  public static async getByISBN(book: TBook): Promise<TBook | undefined> {
     const [result] = await Knex(table).select('*').where('isbn_13', book.isbn_13).orWhere('isbn_10', book.isbn_10);
 
     return result || undefined;
   }
 
-  public static async search(term?: string): Promise<Partial<Book>[]> {
+  public static async search(term?: string): Promise<Partial<TBook>[]> {
     const result = await Knex(table)
       .select('*')
       .where('title', 'like', `%${term}%`)
@@ -30,13 +30,13 @@ export default class BooksService {
     return result;
   }
 
-  public static async insert(book: Book): Promise<number | undefined> {
+  public static async insert(book: TBook): Promise<number | undefined> {
     const [result] = await Knex(table).insert(book);
 
     return result || undefined;
   }
 
-  public static async update(id: number, book: Book): Promise<number | undefined> {
+  public static async update(id: number, book: TBook): Promise<number | undefined> {
     const result = await Knex(table).update(book).where('id', id);
 
     return result || undefined;

@@ -1,11 +1,11 @@
-import { Gender } from '@/@types';
+import { TGender } from '@/@types';
 import { GendersService } from '@/database/services';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../enums/HttpStatus';
 
-export default class GendersController {
+export class GendersController {
   // GET: /genders
-  public static async findAll(req: Request, res: Response): Promise<Response<Gender[]>> {
+  public static async findAll(req: Request, res: Response): Promise<Response<TGender[]>> {
     try {
       const genders = await GendersService.getAll();
 
@@ -24,7 +24,7 @@ export default class GendersController {
   }
 
   // GET: /genders/names?ids=1,2,3
-  public static async getGendersName(req: Request, res: Response): Promise<Response<Gender>> {
+  public static async getGendersName(req: Request, res: Response): Promise<Response<TGender>> {
     try {
       let { ids } = req.query;
 
@@ -59,7 +59,7 @@ export default class GendersController {
   }
 
   // GET: /genders/1
-  public static async findById(req: Request, res: Response): Promise<Response<Gender>> {
+  public static async findById(req: Request, res: Response): Promise<Response<TGender>> {
     try {
       const { id } = req.params;
 
@@ -86,9 +86,9 @@ export default class GendersController {
   }
 
   // POST: /genders
-  public static async add(req: Request, res: Response): Promise<Response<Gender>> {
+  public static async add(req: Request, res: Response): Promise<Response<TGender>> {
     try {
-      const gender: Gender = req.body;
+      const gender: TGender = req.body;
 
       const existingGender = await GendersService.getByName(gender.name);
 
@@ -117,10 +117,10 @@ export default class GendersController {
   }
 
   // PUT: /genders/1
-  public static async update(req: Request, res: Response): Promise<Response<Gender>> {
+  public static async update(req: Request, res: Response): Promise<Response<TGender>> {
     try {
       const { id } = req.params;
-      const gender: Gender = req.body;
+      const gender: TGender = req.body;
 
       if (!id || !parseInt(id)) {
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -146,7 +146,7 @@ export default class GendersController {
   }
 
   // DELETE: /genders/1
-  public static async delete(req: Request, res: Response): Promise<Response<Gender>> {
+  public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
       const { id } = req.params;
 

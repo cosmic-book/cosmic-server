@@ -1,12 +1,12 @@
-import { User } from '@/@types';
+import { TUser } from '@/@types';
 import { UsersService } from '@/database/services';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../enums/HttpStatus';
 
-export default class UsersController {
+export class UsersController {
   // GET: /users
-  public static async findAll(req: Request, res: Response): Promise<Response<User[]>> {
+  public static async findAll(req: Request, res: Response): Promise<Response<TUser[]>> {
     try {
       const users = await UsersService.getAll();
 
@@ -25,7 +25,7 @@ export default class UsersController {
   }
 
   // GET: /users/1
-  public static async findById(req: Request, res: Response): Promise<Response<User>> {
+  public static async findById(req: Request, res: Response): Promise<Response<TUser>> {
     try {
       const { id } = req.params;
 
@@ -52,9 +52,9 @@ export default class UsersController {
   }
 
   // POST: /users
-  public static async add(req: Request, res: Response): Promise<Response<User>> {
+  public static async add(req: Request, res: Response): Promise<Response<TUser>> {
     try {
-      const user: User = req.body;
+      const user: TUser = req.body;
 
       const hasUsername = !!(await UsersService.getByUsername(user.username));
 
@@ -93,10 +93,10 @@ export default class UsersController {
   }
 
   // PUT: /users/1
-  public static async update(req: Request, res: Response): Promise<Response<User>> {
+  public static async update(req: Request, res: Response): Promise<Response<TUser>> {
     try {
       const { id } = req.params;
-      const user: User = req.body;
+      const user: TUser = req.body;
 
       if (!id || !parseInt(id)) {
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -122,7 +122,7 @@ export default class UsersController {
   }
 
   // PUT: /users/password/1
-  public static async changePassword(req: Request, res: Response): Promise<Response<User>> {
+  public static async changePassword(req: Request, res: Response): Promise<Response<TUser>> {
     const { id } = req.params;
     let { newPassword } = req.body;
 
@@ -140,7 +140,7 @@ export default class UsersController {
   }
 
   // DELETE: /users/1
-  public static async delete(req: Request, res: Response): Promise<Response<User>> {
+  public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
       const { id } = req.params;
 

@@ -1,11 +1,11 @@
-import { Reading } from '@/@types';
+import { TReading } from '@/@types';
 import { ReadingsService } from '@/database/services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
 
-export default class ReadingsController {
+export class ReadingsController {
   // GET: /readings
-  public static async findAll(req: Request, res: Response): Promise<Response<Reading[]>> {
+  public static async findAll(req: Request, res: Response): Promise<Response<TReading[]>> {
     try {
       const { limit } = req.query;
 
@@ -29,7 +29,7 @@ export default class ReadingsController {
   }
 
   // GET: /readings/1
-  public static async findById(req: Request, res: Response): Promise<Response<Reading>> {
+  public static async findById(req: Request, res: Response): Promise<Response<TReading>> {
     try {
       const { id } = req.params;
 
@@ -56,9 +56,9 @@ export default class ReadingsController {
   }
 
   // POST: /readings
-  public static async add(req: Request, res: Response): Promise<Response<Reading>> {
+  public static async add(req: Request, res: Response): Promise<Response<TReading>> {
     try {
-      const reading: Reading = req.body;
+      const reading: TReading = req.body;
 
       const existingItem = await ReadingsService.isAdded(reading.id_user, reading.id_book);
 
@@ -87,10 +87,10 @@ export default class ReadingsController {
   }
 
   // PUT: /readings/1
-  public static async update(req: Request, res: Response): Promise<Response<Reading>> {
+  public static async update(req: Request, res: Response): Promise<Response<TReading>> {
     try {
       const { id } = req.params;
-      const reading: Reading = req.body;
+      const reading: TReading = req.body;
 
       if (!id || !parseInt(id)) {
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -117,7 +117,7 @@ export default class ReadingsController {
   }
 
   // DELETE: /readings/1
-  public static async delete(req: Request, res: Response): Promise<Response<Reading>> {
+  public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
       const { id } = req.params;
 

@@ -1,27 +1,27 @@
-import { RefBookGender } from '@/@types';
+import { TRefBookGender } from '@/@types';
 import { TableNames } from '../TableNames';
 import { Knex } from '../knex';
 
 const table = TableNames.refBookGenders;
 
-export default class RefBookGendersService {
-  public static async getAll(): Promise<RefBookGender[]> {
+export class RefBookGendersService {
+  public static async getAll(): Promise<TRefBookGender[]> {
     return Knex(table).select('*');
   }
 
-  public static async getByBook(id_book: number): Promise<RefBookGender[]> {
+  public static async getByBook(id_book: number): Promise<TRefBookGender[]> {
     const result = await Knex(table).select('*').where('id_book', id_book);
 
     return result || undefined;
   }
 
-  public static async getByGender(id_gender: number): Promise<RefBookGender[]> {
+  public static async getByGender(id_gender: number): Promise<TRefBookGender[]> {
     const result = await Knex(table).select('*').where('id_gender', id_gender);
 
     return result || undefined;
   }
 
-  public static async insert(refBookGender: RefBookGender): Promise<number | undefined> {
+  public static async insert(refBookGender: TRefBookGender): Promise<number | undefined> {
     const [result] = await Knex(table).insert(refBookGender);
 
     return result || undefined;

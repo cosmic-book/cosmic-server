@@ -1,6 +1,6 @@
 import { ReadingCategory, ReadingStatus, ReadingType } from '@/enums';
 
-type Reading = {
+export type TReading = {
   id: number;
   id_user: number;
   id_book: number;
@@ -14,5 +14,3 @@ type Reading = {
   start_date?: Date;
   finish_date?: Date;
 };
-
-export default Reading;

@@ -1,11 +1,11 @@
-import { Reading } from '@/@types';
+import { TReading } from '@/@types';
 import { ReadingStatus } from '@/enums';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
 
-export default async function ReadingsMiddleware(req: Request, res: Response, next: NextFunction) {
-  const value: Reading = req.body;
+export async function ReadingsMiddleware(req: Request, res: Response, next: NextFunction) {
+  const value: TReading = req.body;
 
   if (value) {
     let { id_user, id_book, type, status, category, start_date, finish_date } = value;
