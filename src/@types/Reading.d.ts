@@ -1,4 +1,5 @@
 import { ReadingCategory, ReadingStatus, ReadingType } from '@/enums';
+import { TBook } from './Book';
 
 export type TReading = {
   id: number;
@@ -13,4 +14,5 @@ export type TReading = {
   like?: boolean;
   start_date?: Date;
   finish_date?: Date;
+  book?: TBook;
 };

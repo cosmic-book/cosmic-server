@@ -1,5 +1,5 @@
 import { TReading } from '@/@types';
-import { ReadingsService } from '@/database/services';
+import { BooksService, ReadingsService, RefBookGendersService } from '@/database/services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
 
@@ -13,12 +13,62 @@ export class ReadingsController {
 
       if (!readings) {
         return res.status(HttpStatus.NO_CONTENT).json({
-          message: 'Nenhum livro encontrado'
+          message: 'Nenhuma leitura encontrada'
         });
       }
 
       return res.status(HttpStatus.OK).json({
         readings,
+        totalItems: readings.length
+      });
+    } catch (err: unknown) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: (err as Error).message
+      });
+    }
+  }
+
+  // GET: /readings/user/1
+  public static async findByUser(req: Request, res: Response): Promise<Response<TReading[]>> {
+    try {
+      const { id } = req.params;
+
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
+
+      const readings = await ReadingsService.getByUser(parseInt(id));
+
+      let totalReadPages = 0;
+      let totalReviews = 0;
+
+      if (readings) {
+        for (const reading of readings) {
+          const book = await BooksService.getById(reading.id_book);
+
+          if (book && book.id) {
+            book.genders = await RefBookGendersService.getByBook(book.id);
+            book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
+
+            reading.book = book;
+          }
+
+          if (reading.readPages) {
+            totalReadPages += reading.readPages;
+          }
+
+          if (reading.review) {
+            totalReviews++;
+          }
+        }
+      }
+
+      return res.status(HttpStatus.OK).json({
+        readings,
+        totalReadPages,
+        totalReviews,
         totalItems: readings.length
       });
     } catch (err: unknown) {
@@ -45,6 +95,15 @@ export class ReadingsController {
         return res.status(HttpStatus.NOT_FOUND).json({
           message: 'Leitura não encontrada'
         });
+      }
+
+      const book = await BooksService.getById(reading.id_book);
+
+      if (book && book.id) {
+        book.genders = await RefBookGendersService.getByBook(book.id);
+        book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
+
+        reading.book = book;
       }
 
       return res.status(HttpStatus.OK).json(reading);

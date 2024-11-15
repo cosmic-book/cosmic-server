@@ -1,4 +1,5 @@
 import { TReading } from '@/@types';
+import { BooksService, UsersService } from '@/database/services';
 import { ReadingStatus } from '@/enums';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
@@ -22,7 +23,10 @@ export async function ReadingsMiddleware(req: Request, res: Response, next: Next
       });
     }
 
-    if (!status || !(type >= 0 && status >= 0 && category >= 0)) {
+    const user = await UsersService.getById(id_user);
+    const book = await BooksService.getById(id_book);
+
+    if (!user || !book || !(type >= 0 && status >= 0 && category >= 0)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });
