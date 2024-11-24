@@ -55,8 +55,8 @@ export class ReadingsController {
             reading.book = book;
           }
 
-          if (reading.readPages) {
-            totalReadPages += reading.readPages;
+          if (reading.read_pages) {
+            totalReadPages += reading.read_pages;
           }
 
           if (reading.review) {

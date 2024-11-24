@@ -8,7 +8,7 @@ export type TReading = {
   status: ReadingStatus;
   type: ReadingType;
   category: ReadingCategory;
-  readPages?: number;
+  read_pages?: number;
   rating?: number;
   review?: string;
   like?: boolean;
