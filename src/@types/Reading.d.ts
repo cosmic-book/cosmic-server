@@ -11,7 +11,7 @@ export type TReading = {
   read_pages?: number;
   rating?: number;
   review?: string;
-  like?: boolean;
+  favorite?: boolean;
   start_date?: Date;
   finish_date?: Date;
   book?: TBook;

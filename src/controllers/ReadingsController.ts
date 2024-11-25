@@ -3,6 +3,11 @@ import { BooksService, ReadingsService, RefBookGendersService } from '@/database
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
 
+type TBookDetails = {
+  totalReadPages: number;
+  totalReviews: number;
+};
+
 export class ReadingsController {
   // GET: /readings
   public static async findAll(req: Request, res: Response): Promise<Response<TReading[]>> {
@@ -41,35 +46,39 @@ export class ReadingsController {
 
       const readings = await ReadingsService.getByUser(parseInt(id));
 
-      let totalReadPages = 0;
-      let totalReviews = 0;
-
-      if (readings) {
-        for (const reading of readings) {
-          const book = await BooksService.getById(reading.id_book);
-
-          if (book && book.id) {
-            book.genders = await RefBookGendersService.getByBook(book.id);
-            book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
-
-            reading.book = book;
-          }
-
-          if (reading.read_pages) {
-            totalReadPages += reading.read_pages;
-          }
-
-          if (reading.review) {
-            totalReviews++;
-          }
-        }
-      }
+      const { totalReadPages, totalReviews } = await ReadingsController.getBookDetails(readings);
 
       return res.status(HttpStatus.OK).json({
         readings,
         totalReadPages,
         totalReviews,
         totalItems: readings.length
+      });
+    } catch (err: unknown) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: (err as Error).message
+      });
+    }
+  }
+
+  // GET: /readings/favorite/1
+  public static async findFavoritesByUser(req: Request, res: Response): Promise<Response<TReading[]>> {
+    try {
+      const { id } = req.params;
+
+      if (!id || !parseInt(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Parâmetro inválido'
+        });
+      }
+
+      const favorites = await ReadingsService.getFavoritesByUser(parseInt(id));
+
+      await ReadingsController.getBookDetails(favorites);
+
+      return res.status(HttpStatus.OK).json({
+        favorites,
+        totalItems: favorites.length
       });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -202,5 +211,33 @@ export class ReadingsController {
         message: (err as Error).message
       });
     }
+  }
+
+  private static async getBookDetails(readings: TReading[]): Promise<TBookDetails> {
+    let totalReadPages = 0;
+    let totalReviews = 0;
+
+    if (readings) {
+      for (const reading of readings) {
+        const book = await BooksService.getById(reading.id_book);
+
+        if (book && book.id) {
+          book.genders = await RefBookGendersService.getByBook(book.id);
+          book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
+
+          reading.book = book;
+        }
+
+        if (reading.read_pages) {
+          totalReadPages += reading.read_pages;
+        }
+
+        if (reading.review) {
+          totalReviews++;
+        }
+      }
+    }
+
+    return { totalReadPages, totalReviews };
   }
 }

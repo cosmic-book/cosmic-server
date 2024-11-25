@@ -13,6 +13,10 @@ export class ReadingsService {
     return Knex(table).select('*').where('id_user', user_id);
   }
 
+  public static async getFavoritesByUser(user_id: number): Promise<TReading[]> {
+    return Knex(table).select('*').where('id_user', user_id).andWhere('favorite', true);
+  }
+
   public static async getById(id: number): Promise<TReading | undefined> {
     const [result] = await Knex(table).select('*').where('id', id);
 

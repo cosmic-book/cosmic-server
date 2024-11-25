@@ -8,6 +8,7 @@ route.use(AuthMiddleware);
 
 route.get('/', ReadingsController.findAll);
 route.get('/user/:id', ReadingsController.findByUser);
+route.get('/favorite/:id', ReadingsController.findFavoritesByUser);
 route.get('/:id', ReadingsController.findById);
 route.post('/', ReadingsMiddleware, ReadingsController.add);
 route.put('/:id', ReadingsMiddleware, ReadingsController.update);
