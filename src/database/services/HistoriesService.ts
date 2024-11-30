@@ -10,7 +10,7 @@ export class HistoriesService {
   }
 
   public static async getByReading(reading_id: number): Promise<THistory[]> {
-    return Knex(table).select('*').where('id_reading', reading_id);
+    return Knex(table).select('*').where('id_reading', reading_id).orderBy('date', 'desc');
   }
 
   public static async getLastByReading(reading_id: number): Promise<THistory> {

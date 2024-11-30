@@ -18,7 +18,7 @@ export class HistoriesController {
 
       if (!histories) {
         return res.status(HttpStatus.NO_CONTENT).json({
-          message: 'Nenhum histórico de leitura encontrado'
+          message: 'Nenhum registro de leitura encontrado'
         });
       }
 
@@ -34,10 +34,9 @@ export class HistoriesController {
   }
 
   // GET: /histories/reading/1
-  public static async findByReading(req: Request, res: Response): Promise<Response<THistory | THistory[]>> {
+  public static async findByReading(req: Request, res: Response): Promise<Response<THistory[]>> {
     try {
       const { id } = req.params;
-      const { last } = req.query;
 
       if (!id || !parseInt(id)) {
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -45,38 +44,20 @@ export class HistoriesController {
         });
       }
 
-      if (!last) {
-        const histories = await HistoriesService.getByReading(parseInt(id));
+      const histories = await HistoriesService.getByReading(parseInt(id));
 
-        for (const history of histories) {
-          const reading = await ReadingsService.getById(history.id_reading);
+      for (const history of histories) {
+        const reading = await ReadingsService.getById(history.id_reading);
 
-          if (reading && reading.id) {
-            history.reading = reading;
-          }
+        if (reading && reading.id) {
+          history.reading = reading;
         }
-
-        return res.status(HttpStatus.OK).json({
-          histories,
-          totalItems: histories.length
-        });
       }
 
-      const history = await HistoriesService.getLastByReading(parseInt(id));
-
-      if (!history) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Histórico de Leitura não encontrado'
-        });
-      }
-
-      const reading = await ReadingsService.getById(history.id_reading);
-
-      if (reading && reading.id) {
-        history.reading = reading;
-      }
-
-      return res.status(HttpStatus.OK).json(history);
+      return res.status(HttpStatus.OK).json({
+        histories,
+        totalItems: histories.length
+      });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -99,7 +80,7 @@ export class HistoriesController {
 
       if (!history) {
         return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Histórico de Leitura não encontrado'
+          message: 'Registro de leitura não encontrado'
         });
       }
 
@@ -127,11 +108,13 @@ export class HistoriesController {
       if (id) {
         history.id = id;
 
+        await ReadingsService.updatePages(history.id_reading, history.read_pages);
+
         return res.status(HttpStatus.CREATED).json(history);
       }
 
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao adicionar leitura na estante'
+        message: 'Erro ao adicionar registro de leitura'
       });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -161,7 +144,7 @@ export class HistoriesController {
       }
 
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao atualizar a leitura da estante'
+        message: 'Erro ao atualizar registro de leitura'
       });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -181,16 +164,21 @@ export class HistoriesController {
         });
       }
 
+      const history = await HistoriesService.getById(parseInt(id));
       const result = await HistoriesService.delete(parseInt(id));
 
       if (!result) {
         return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Leitura não encontrada'
+          message: 'Registro não encontrado'
         });
       }
 
+      if (history) {
+        await ReadingsService.updatePagesToLast(history.id_reading);
+      }
+
       return res.status(HttpStatus.OK).json({
-        message: 'Leitura deletada com sucesso'
+        message: 'Registro deletado com sucesso'
       });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
