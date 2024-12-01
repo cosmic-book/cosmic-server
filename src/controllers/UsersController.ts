@@ -104,6 +104,8 @@ export class UsersController {
         });
       }
 
+      user.password = await bcrypt.hash(user.password, 10);
+
       const result = await UsersService.update(parseInt(id), user);
 
       if (result) {
