@@ -25,14 +25,16 @@ export class HistoriesService {
     return result || undefined;
   }
 
-  public static async insert(reading: THistory): Promise<number | undefined> {
-    const [result] = await Knex(table).insert(reading);
+  public static async insert(history: THistory): Promise<number | undefined> {
+    const [result] = await Knex(table).insert(history);
 
     return result || undefined;
   }
 
-  public static async update(id: number, reading: THistory): Promise<number | undefined> {
-    const result = await Knex(table).update(reading).where('id', id);
+  public static async update(id: number, history: THistory): Promise<number | undefined> {
+    if (history.reading) history.reading = undefined;
+
+    const result = await Knex(table).update(history).where('id', id);
 
     return result || undefined;
   }

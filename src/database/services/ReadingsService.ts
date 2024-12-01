@@ -35,16 +35,12 @@ export class ReadingsService {
     return result || undefined;
   }
 
-  public static async updatePages(id: number, pages: number): Promise<number | undefined> {
-    const result = await Knex(table).update('read_pages', pages).where('id', id);
-
-    return result || undefined;
-  }
-
   public static async updatePagesToLast(id: number): Promise<number | undefined> {
-    const [history] = await Knex(TableNames.histories).where('id_reading', id).orderBy('date', 'desc').limit(1);
+    const history = await Knex(TableNames.histories).where('id_reading', id).orderBy('date', 'desc').first();
 
-    const result = this.updatePages(id, history ? history.read_pages : 0);
+    const read_pages = history?.read_pages || 0;
+
+    const result = await Knex(TableNames.readings).update({ read_pages }).where('id', id);
 
     return result || undefined;
   }

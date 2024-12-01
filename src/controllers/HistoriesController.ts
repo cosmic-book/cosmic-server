@@ -1,7 +1,9 @@
 import { THistory } from '@/@types';
 import { BooksService, HistoriesService, ReadingsService, RefBookGendersService } from '@/database/services';
+import { ReadingStatus } from '@/enums';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
+import moment from 'moment';
 
 type TBookDetails = {
   totalReadPages: number;
@@ -108,7 +110,7 @@ export class HistoriesController {
       if (id) {
         history.id = id;
 
-        await ReadingsService.updatePages(history.id_reading, history.read_pages);
+        await this.updateHistoryReading(history);
 
         return res.status(HttpStatus.CREATED).json(history);
       }
@@ -134,6 +136,8 @@ export class HistoriesController {
           message: 'Parâmetro inválido'
         });
       }
+
+      await this.updateHistoryReading(history);
 
       const result = await HistoriesService.update(parseInt(id), history);
 
@@ -184,6 +188,28 @@ export class HistoriesController {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
       });
+    }
+  }
+
+  private static async updateHistoryReading(history: THistory): Promise<void> {
+    const reading = await ReadingsService.getById(history.id_reading);
+
+    if (reading) {
+      const book = await BooksService.getById(reading.id_book);
+
+      if (reading.status === ReadingStatus.TO_READ) {
+        reading.status = ReadingStatus.READING;
+        reading.start_date = new Date();
+      }
+
+      if (book && history.read_pages === book.pages) {
+        reading.status = ReadingStatus.FINISHED;
+        reading.finish_date = new Date();
+      }
+
+      reading.read_pages = history.read_pages;
+
+      await ReadingsService.update(reading.id, reading);
     }
   }
 }
