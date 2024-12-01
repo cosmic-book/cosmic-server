@@ -26,7 +26,7 @@ export async function ReadingsMiddleware(req: Request, res: Response, next: Next
     const user = await UsersService.getById(id_user);
     const book = await BooksService.getById(id_book);
 
-    if (!user || !book || !(type >= 0 && status >= 0 && category >= 0)) {
+    if (!user || !book || status === null || !(type >= 0 && status >= 0 && category >= 0)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });
