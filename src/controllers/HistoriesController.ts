@@ -110,7 +110,7 @@ export class HistoriesController {
       if (id) {
         history.id = id;
 
-        await this.updateHistoryReading(history);
+        await HistoriesController.updateHistoryReading(history);
 
         return res.status(HttpStatus.CREATED).json(history);
       }
@@ -137,7 +137,7 @@ export class HistoriesController {
         });
       }
 
-      await this.updateHistoryReading(history);
+      await HistoriesController.updateHistoryReading(history);
 
       const result = await HistoriesService.update(parseInt(id), history);
 

@@ -19,6 +19,12 @@ export class HistoriesService {
     return result || undefined;
   }
 
+  public static async getLastByUser(user_id: number): Promise<THistory> {
+    const [result] = await Knex(table).select('*').where('id_user', user_id).orderBy('date', 'desc').limit(1);
+
+    return result || undefined;
+  }
+
   public static async getById(id: number): Promise<THistory | undefined> {
     const [result] = await Knex(table).select('*').where('id', id);
 

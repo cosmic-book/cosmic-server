@@ -1,5 +1,5 @@
 import { THistory } from '@/@types';
-import { BooksService, ReadingsService } from '@/database/services';
+import { BooksService, ReadingsService, UsersService } from '@/database/services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
@@ -8,7 +8,13 @@ export async function HistoriesMiddleware(req: Request, res: Response, next: Nex
   const value: THistory = req.body;
 
   if (value) {
-    let { id_reading, date, read_pages } = value;
+    let { id_user, id_reading, date, read_pages } = value;
+
+    if (!id_user) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Usuário não informado'
+      });
+    }
 
     if (!id_reading) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -16,9 +22,10 @@ export async function HistoriesMiddleware(req: Request, res: Response, next: Nex
       });
     }
 
+    const user = await UsersService.getById(id_user);
     const reading = await ReadingsService.getById(id_reading);
 
-    if (!reading || !date || !read_pages) {
+    if (!user || !reading || !date || !read_pages) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });
