@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { TableNames } from '../TableNames';
-import { Book, Gender } from '@/@types';
+import { TBook, TGender } from '@/@types';
 import { readFile } from 'fs/promises';
 import { BooksService, GendersService, RefBookGendersService } from '../services';
 import { join } from 'path';
@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
   const data: any[] = JSON.parse(await readFile(filePath, 'utf8'));
 
   for (const item of data) {
-    const book: Book = {
+    const book: TBook = {
       id: 0,
       title: item.title,
       author: item.author,
@@ -51,7 +51,7 @@ export async function up(knex: Knex): Promise<void> {
     for (const genderName of bookGenders) {
       const existsGender = await GendersService.getByName(genderName);
 
-      const gender: Gender = {
+      const gender: TGender = {
         id: existsGender?.id || 0,
         name: genderName.trim()
       };
