@@ -1,4 +1,4 @@
-import { THistory } from '@/@types';
+import { THistory, TReading } from '@/@types';
 import { BooksService, HistoriesService, ReadingsService, RefBookGendersService } from '@/database/services';
 import { ReadingStatus } from '@/enums';
 import { HttpStatus } from '@/enums/HttpStatus';
@@ -134,6 +134,12 @@ export class HistoriesController {
       if (!id || !parseInt(id)) {
         return res.status(HttpStatus.BAD_REQUEST).json({
           message: 'Parâmetro inválido'
+        });
+      }
+
+      if (history.date && moment(history.date).isAfter(new Date())) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'A data não pode ser maior que a data atual'
         });
       }
 

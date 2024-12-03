@@ -31,12 +31,6 @@ export async function HistoriesMiddleware(req: Request, res: Response, next: Nex
       });
     }
 
-    if (date && moment(date).isAfter(new Date())) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'A data não pode ser maior que a data atual'
-      });
-    }
-
     const book = await BooksService.getById(reading.id_book);
 
     if (book && (read_pages < 0 || read_pages > book.pages)) {

@@ -1,4 +1,4 @@
-import { TReading } from '@/@types';
+import { TBookshelfFilter, TReading } from '@/@types';
 import { TableNames } from '../TableNames';
 import { Knex } from '../knex';
 
@@ -11,6 +11,26 @@ export class ReadingsService {
 
   public static async getByUser(user_id: number): Promise<TReading[]> {
     return Knex(table).select('*').where('id_user', user_id);
+  }
+
+  public static async getByUserFiltered(user_id: number, filters: TBookshelfFilter): Promise<TReading[]> {
+    return Knex(table)
+      .select('*')
+      .where('id_user', user_id)
+      .modify((query) => {
+        if (filters.category !== undefined) {
+          query.andWhere('category', filters.category);
+        }
+        if (filters.status !== undefined) {
+          query.andWhere('status', filters.status);
+        }
+        if (filters.type !== undefined) {
+          query.andWhere('type', filters.type);
+        }
+        if (filters.rating !== undefined) {
+          query.andWhere('rating', filters.rating);
+        }
+      });
   }
 
   public static async getFavoritesByUser(user_id: number): Promise<TReading[]> {

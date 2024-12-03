@@ -1,4 +1,4 @@
-import { THistory, TReading } from '@/@types';
+import { TBookshelfFilter, THistory, TReading } from '@/@types';
 import { BooksService, HistoriesService, ReadingsService, RefBookGendersService } from '@/database/services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
@@ -10,7 +10,8 @@ type TBookDetails = {
 };
 
 type TProfileInfos = {
-  readings: TReading[];
+  allReadings: TReading[];
+  filteredReadings: TReading[];
   totalReadPages: number;
   totalReviews: number;
   totalItems: number;
@@ -23,6 +24,7 @@ export class ProfileController {
   public static async findInfosByUser(req: Request, res: Response): Promise<Response<TProfileInfos>> {
     try {
       const { id } = req.params;
+      const { category, status, type, rating } = req.query;
 
       if (!id || !parseInt(id)) {
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -30,29 +32,45 @@ export class ProfileController {
         });
       }
 
-      const readings = await ReadingsService.getByUser(parseInt(id));
+      const filters: TBookshelfFilter = {
+        category: category !== 'undefined' ? parseInt(category as string) : undefined,
+        status: status !== 'undefined' ? parseInt(status as string) : undefined,
+        type: type !== 'undefined' ? parseInt(type as string) : undefined,
+        rating: rating !== 'undefined' ? parseInt(rating as string) : undefined
+      };
 
-      const { favorites, totalReadPages, totalReviews } = await ProfileController.getBookDetails(readings);
+      const allReadings = await ReadingsService.getByUser(parseInt(id));
+      const filteredReadings = await ReadingsService.getByUserFiltered(parseInt(id), filters);
+
+      const { favorites, totalReadPages, totalReviews } = await ProfileController.getBookDetails(allReadings);
+
+      if (filteredReadings.length) {
+        await ProfileController.getBookDetails(filteredReadings);
+      }
 
       const lastHistory = await HistoriesService.getLastByUser(parseInt(id));
-      const lastHistoryReading = await ReadingsService.getById(lastHistory.id_reading);
 
-      if (lastHistoryReading) {
-        const lastHistoryBook = await BooksService.getById(lastHistoryReading.id_book);
+      if (lastHistory) {
+        const lastHistoryReading = await ReadingsService.getById(lastHistory.id_reading);
 
-        if (lastHistoryBook) {
-          lastHistoryBook.cover = `https://covers.openlibrary.org/b/isbn/${lastHistoryBook.isbn_13}-M.jpg?default=false`;
+        if (lastHistoryReading) {
+          const lastHistoryBook = await BooksService.getById(lastHistoryReading.id_book);
 
-          lastHistoryReading.book = lastHistoryBook;
-          lastHistory.reading = lastHistoryReading;
+          if (lastHistoryBook) {
+            lastHistoryBook.cover = `https://covers.openlibrary.org/b/isbn/${lastHistoryBook.isbn_13}-M.jpg?default=false`;
+
+            lastHistoryReading.book = lastHistoryBook;
+            lastHistory.reading = lastHistoryReading;
+          }
         }
       }
 
       const infos: TProfileInfos = {
-        readings,
+        allReadings,
+        filteredReadings,
         totalReadPages,
         totalReviews,
-        totalItems: readings.length,
+        totalItems: allReadings.length,
         favorites,
         lastHistory
       };
