@@ -1,5 +1,5 @@
 import { TBookshelfFilter, THistory, TReading } from '@/@types';
-import { BooksService, HistoriesService, ReadingsService, RefBookGendersService } from '@/database/services';
+import { BooksService, HistoriesService, ReadingsService, RefBookGendersService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
 

@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 import { TableNames } from '../TableNames';
 import { TBook, TGender } from '@/@types';
 import { readFile } from 'fs/promises';
-import { BooksService, GendersService, RefBookGendersService } from '../services';
+import { BooksService, GendersService, RefBookGendersService } from '../_services';
 import { join } from 'path';
 
 export type RefBookGender = {

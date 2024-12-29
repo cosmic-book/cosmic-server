@@ -1,7 +1,7 @@
-export { AuthMiddleware } from './AuthMiddleware';
-export { BooksMiddleware } from './BooksMiddleware';
-export { GendersMiddleware } from './GendersMiddleware';
-export { HistoriesMiddleware } from './HistoriesMiddleware';
-export { PasswordMiddleware } from './PasswordMiddleware';
-export { ReadingsMiddleware } from './ReadingsMiddleware';
-export { UsersMiddleware } from './UsersMiddleware';
+export { AuthMiddleware } from './auth.middleware';
+export { BooksMiddleware } from './books.middleware';
+export { GendersMiddleware } from './genders.middleware';
+export { HistoriesMiddleware } from './histories.middleware';
+export { PasswordMiddleware } from './password.middleware';
+export { ReadingsMiddleware } from './readings.middleware';
+export { UsersMiddleware } from './users.middleware';

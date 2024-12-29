@@ -1,5 +1,5 @@
 import { THistory } from '@/@types';
-import { BooksService, ReadingsService, UsersService } from '@/database/services';
+import { BooksService, ReadingsService, UsersService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';

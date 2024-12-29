@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import AuthRoutes from '@/routes/AuthRoutes';
 
-import BooksRoutes from '@/routes/BooksRoutes';
-import GendersRoutes from '@/routes/GendersRoutes';
-import HistoriesRoutes from '@/routes/HistoriesRoutes';
-import ProfileRoutes from '@/routes/ProfileRoutes';
-import ReadingsRoutes from '@/routes/ReadingsRoutes';
-import UsersRoutes from '@/routes/UsersRoutes';
+import AuthRoutes from '@/routes/auth.routes';
+import BooksRoutes from '@/routes/books.routes';
+import GendersRoutes from '@/routes/genders.routes';
+import HistoriesRoutes from '@/routes/histories.routes';
+import ProfileRoutes from '@/routes/profile.routes';
+import ReadingsRoutes from '@/routes/readings.routes';
+import UsersRoutes from '@/routes/users.routes';
 
 const routes = Router();
 

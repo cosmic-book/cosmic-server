@@ -1,5 +1,5 @@
 import { TUser } from '@/@types';
-import { UsersService } from '@/database/services';
+import { UsersService } from '@/database/_services';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../enums/HttpStatus';

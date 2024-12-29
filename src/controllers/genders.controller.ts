@@ -1,5 +1,5 @@
 import { TGender } from '@/@types';
-import { GendersService } from '@/database/services';
+import { GendersService } from '@/database/_services';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../enums/HttpStatus';
 

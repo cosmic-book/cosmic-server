@@ -1,5 +1,5 @@
 import { TBook } from '@/@types';
-import { BooksService, RefBookGendersService } from '@/database/services';
+import { BooksService, RefBookGendersService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
 
