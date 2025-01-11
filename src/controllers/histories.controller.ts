@@ -5,11 +5,6 @@ import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
 import moment from 'moment';
 
-type TBookDetails = {
-  totalReadPages: number;
-  totalReviews: number;
-};
-
 export class HistoriesController {
   // GET: /histories
   public static async findAll(req: Request, res: Response): Promise<Response<THistory[]>> {
@@ -19,9 +14,7 @@ export class HistoriesController {
       const histories = await HistoriesService.getAll(limit?.toString());
 
       if (!histories) {
-        return res.status(HttpStatus.NO_CONTENT).json({
-          message: 'Nenhum registro de leitura encontrado'
-        });
+        return res.status(HttpStatus.NO_CONTENT).json({ message: 'Nenhum registro de leitura encontrado' });
       }
 
       return res.status(HttpStatus.OK).json({
@@ -38,15 +31,13 @@ export class HistoriesController {
   // GET: /histories/reading/1
   public static async findByReading(req: Request, res: Response): Promise<Response<THistory[]>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const histories = await HistoriesService.getByReading(parseInt(id));
+      const histories = await HistoriesService.getByReading(id);
 
       for (const history of histories) {
         const reading = await ReadingsService.getById(history.id_reading);
@@ -70,20 +61,16 @@ export class HistoriesController {
   // GET: /histories/1
   public static async findById(req: Request, res: Response): Promise<Response<THistory>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const history = await HistoriesService.getById(parseInt(id));
+      const history = await HistoriesService.getById(id);
 
       if (!history) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Registro de leitura não encontrado'
-        });
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Registro de leitura não encontrado' });
       }
 
       const reading = await ReadingsService.getById(history.id_reading);
@@ -107,17 +94,15 @@ export class HistoriesController {
 
       const id = await HistoriesService.insert(history);
 
-      if (id) {
-        history.id = id;
-
-        await HistoriesController.updateHistoryReading(history);
-
-        return res.status(HttpStatus.CREATED).json(history);
+      if (!id) {
+        throw new Error('Erro ao adicionar registro de leitura');
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao adicionar registro de leitura'
-      });
+      history.id = id;
+
+      await HistoriesController.updateHistoryReading(history);
+
+      return res.status(HttpStatus.CREATED).json(history);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -128,34 +113,30 @@ export class HistoriesController {
   // PUT: /histories/1
   public static async update(req: Request, res: Response): Promise<Response<THistory>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
       const history: THistory = req.body;
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      if (history.date && moment(history.date).isAfter(new Date())) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'A data não pode ser maior que a data atual'
-        });
+      const hasHistory = !!(await HistoriesService.getById(id));
+
+      if (!hasHistory) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Registro de Leitura não encontrado' });
       }
 
       await HistoriesController.updateHistoryReading(history);
 
-      const result = await HistoriesService.update(parseInt(id), history);
+      const result = await HistoriesService.update(id, history);
 
-      if (result) {
-        history.id = parseInt(id);
-
-        return res.status(HttpStatus.OK).json(history);
+      if (!result) {
+        throw new Error('Erro ao atualizar registro de leitura');
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao atualizar registro de leitura'
-      });
+      history.id = id;
+
+      return res.status(HttpStatus.OK).json(history);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -166,30 +147,29 @@ export class HistoriesController {
   // DELETE: /histories/1
   public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const history = await HistoriesService.getById(parseInt(id));
-      const result = await HistoriesService.delete(parseInt(id));
+      // First update reading
+      const history = await HistoriesService.getById(id);
 
-      if (!result) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Registro não encontrado'
-        });
+      if (!history) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Gênero não encontrado' });
       }
 
-      if (history) {
-        await ReadingsService.updatePagesToLast(history.id_reading);
+      await ReadingsService.updatePagesToLast(history.id_reading);
+
+      // Then delete
+      const isDeleted = await HistoriesService.delete(id);
+
+      if (!isDeleted) {
+        throw new Error('Erro ao deletar gênero');
       }
 
-      return res.status(HttpStatus.OK).json({
-        message: 'Registro deletado com sucesso'
-      });
+      return res.status(HttpStatus.OK).json({ message: 'Registro deletado com sucesso' });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message

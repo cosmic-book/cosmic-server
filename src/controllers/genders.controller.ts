@@ -10,9 +10,7 @@ export class GendersController {
       const genders = await GendersService.getAll();
 
       if (!genders) {
-        return res.status(HttpStatus.NO_CONTENT).json({
-          message: 'Nenhum gênero encontrado'
-        });
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Nenhum gênero encontrado' });
       }
 
       return res.status(HttpStatus.OK).json(genders);
@@ -36,21 +34,19 @@ export class GendersController {
         for (const id of ids) {
           const gender = await GendersService.getById(parseInt(id));
 
-          if (!gender) {
-            return res.status(HttpStatus.NO_CONTENT).json({
-              message: 'Gênero não encontrado'
-            });
+          if (gender) {
+            names.push(gender.name);
           }
+        }
 
-          names.push(gender.name);
+        if (!names.length) {
+          return res.status(HttpStatus.NOT_FOUND).json({ message: 'Gêneros não encontrados' });
         }
 
         return res.status(HttpStatus.OK).json(names);
       }
 
-      return res.status(HttpStatus.NO_CONTENT).json({
-        message: 'Erro ao encontrar gêneros'
-      });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Erro ao encontrar gêneros' });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -61,20 +57,16 @@ export class GendersController {
   // GET: /genders/1
   public static async findById(req: Request, res: Response): Promise<Response<TGender>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const gender = await GendersService.getById(parseInt(id));
+      const gender = await GendersService.getById(id);
 
       if (!gender) {
-        return res.status(HttpStatus.NO_CONTENT).json({
-          message: 'Gênero não encontrado'
-        });
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Gênero não encontrado' });
       }
 
       return res.status(HttpStatus.OK).json(gender);
@@ -93,22 +85,18 @@ export class GendersController {
       const existingGender = await GendersService.getByName(gender.name);
 
       if (existingGender) {
-        return res.status(HttpStatus.CONFLICT).json({
-          message: 'Gênero já cadastrado'
-        });
+        return res.status(HttpStatus.CONFLICT).json({ message: 'Gênero já cadastrado' });
       }
 
       const id = await GendersService.insert(gender);
 
-      if (id) {
-        gender.id = id;
-
-        return res.status(HttpStatus.CREATED).json(gender);
+      if (!id) {
+        throw new Error('Erro ao adicionar gênero');
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao adicionar gênero'
-      });
+      gender.id = id;
+
+      return res.status(HttpStatus.CREATED).json(gender);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -119,25 +107,28 @@ export class GendersController {
   // PUT: /genders/1
   public static async update(req: Request, res: Response): Promise<Response<TGender>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
       const gender: TGender = req.body;
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const result = await GendersService.update(parseInt(id), gender);
+      const hasGender = !!(await GendersService.getById(id));
 
-      if (result) {
-        gender.id = parseInt(id);
-        return res.status(HttpStatus.OK).json(gender);
+      if (!hasGender) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Gênero não encontrado' });
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao atualizar gênero'
-      });
+      const result = await GendersService.update(id, gender);
+
+      if (!result) {
+        throw new Error('Erro ao atualizar gênero');
+      }
+
+      gender.id = id;
+
+      return res.status(HttpStatus.OK).json(gender);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -148,25 +139,25 @@ export class GendersController {
   // DELETE: /genders/1
   public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const result = await GendersService.delete(parseInt(id));
+      const hasGender = !!(await GendersService.getById(id));
 
-      if (!result) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Gênero não encontrado'
-        });
+      if (!hasGender) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Gênero não encontrado' });
       }
 
-      return res.status(HttpStatus.OK).json({
-        message: 'Gênero deletado com sucesso'
-      });
+      const isDeleted = await GendersService.delete(id);
+
+      if (!isDeleted) {
+        throw new Error('Erro ao deletar gênero');
+      }
+
+      return res.status(HttpStatus.OK).json({ message: 'Gênero deletado com sucesso' });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message

@@ -14,17 +14,13 @@ export class AuthController {
         const user = await UsersService.getByUsername(username);
 
         if (!user) {
-          return res.status(HttpStatus.NOT_FOUND).json({
-            message: 'Usuário não encontrado'
-          });
+          return res.status(HttpStatus.NOT_FOUND).json({ message: 'Usuário não encontrado' });
         }
 
         const compare = await bcrypt.compare(password, user.password);
 
         if (!compare) {
-          return res.status(HttpStatus.CONFLICT).json({
-            message: 'Senha inválida'
-          });
+          return res.status(HttpStatus.CONFLICT).json({ message: 'Senha inválida' });
         }
 
         const { token, exp } = generateToken(user);
