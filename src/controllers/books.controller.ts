@@ -63,20 +63,16 @@ export class BooksController {
   // GET: /books/1
   public static async findById(req: Request, res: Response): Promise<Response<TBook>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const book = await BooksService.getById(parseInt(id));
+      const book = await BooksService.getById(id);
 
       if (!book) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Livro não encontrado'
-        });
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Livro não encontrado' });
       }
 
       return res.status(HttpStatus.OK).json(book);
@@ -92,25 +88,21 @@ export class BooksController {
     try {
       const book: TBook = req.body;
 
-      const existingBook = await BooksService.getByISBN(book);
+      const existingBook = !!(await BooksService.getByISBN(book));
 
       if (existingBook) {
-        return res.status(HttpStatus.CONFLICT).json({
-          message: 'Livro já cadastrado'
-        });
+        return res.status(HttpStatus.CONFLICT).json({ message: 'Livro já cadastrado' });
       }
 
       const id = await BooksService.insert(book);
 
-      if (id) {
-        book.id = id;
-
-        return res.status(HttpStatus.CREATED).json(book);
+      if (!id) {
+        throw new Error('Erro ao adicionar livro');
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao adicionar livro'
-      });
+      book.id = id;
+
+      return res.status(HttpStatus.CREATED).json(book);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -121,25 +113,28 @@ export class BooksController {
   // PUT: /books/1
   public static async update(req: Request, res: Response): Promise<Response<TBook>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
       const book: TBook = req.body;
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const result = await BooksService.update(parseInt(id), book);
+      const hasBook = !!(await BooksService.getById(id));
 
-      if (result) {
-        book.id = parseInt(id);
-        return res.status(HttpStatus.OK).json(book);
+      if (!hasBook) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Livro não encontrado' });
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao atualizar o livro'
-      });
+      const result = await BooksService.update(id, book);
+
+      if (!result) {
+        throw new Error('Erro ao atualizar livro');
+      }
+
+      book.id = id;
+
+      return res.status(HttpStatus.OK).json(book);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -148,27 +143,27 @@ export class BooksController {
   }
 
   // DELETE: /books/1
-  public static async delete(req: Request, res: Response): Promise<Response<void>> {
+  public static async delete(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const result = await BooksService.delete(parseInt(id));
+      const hasBook = !!(await BooksService.getById(id));
 
-      if (!result) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Livro não encontrado'
-        });
+      if (!hasBook) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Livro não encontrado' });
       }
 
-      return res.status(HttpStatus.OK).json({
-        message: 'Livro deletado com sucesso'
-      });
+      const isDeleted = await BooksService.delete(id);
+
+      if (!isDeleted) {
+        throw new Error('Erro ao deletar livro');
+      }
+
+      return res.status(HttpStatus.OK).json({ message: 'Livro deletado com sucesso' });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message

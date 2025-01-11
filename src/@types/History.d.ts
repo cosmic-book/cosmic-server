@@ -7,5 +7,6 @@ export type THistory = {
   date: Date;
   read_pages: number;
   comment?: string;
+  is_deleted?: boolean;
   reading?: TReading;
 };

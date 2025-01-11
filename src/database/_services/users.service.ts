@@ -6,23 +6,23 @@ const table = TableNames.users;
 
 export class UsersService {
   public static async getAll(): Promise<TUser[]> {
-    return Knex(table).select('*');
+    return Knex(table).select('*').where('is_deleted', false);
   }
 
   public static async getById(id: number): Promise<TUser | undefined> {
-    const [result] = await Knex(table).select('*').where('id', id).limit(1);
+    const [result] = await Knex(table).select('*').where('id', id).andWhere('is_deleted', false).limit(1);
 
     return result || undefined;
   }
 
   public static async getByUsername(username: string): Promise<TUser | undefined> {
-    const [result] = await Knex(table).select('*').where('username', username).limit(1);
+    const [result] = await Knex(table).select('*').where('username', username).andWhere('is_deleted', false).limit(1);
 
     return result || undefined;
   }
 
   public static async getByEmail(email: string): Promise<TUser | undefined> {
-    const [result] = await Knex(table).select('*').where('email', email).limit(1);
+    const [result] = await Knex(table).select('*').where('email', email).andWhere('is_deleted', false).limit(1);
 
     return result || undefined;
   }
@@ -46,7 +46,7 @@ export class UsersService {
   }
 
   public static async delete(id: number): Promise<number | undefined> {
-    const result = await Knex(table).delete().where('id', id);
+    const result = await Knex(table).update({ is_deleted: true }).where('id', id);
 
     return result || undefined;
   }

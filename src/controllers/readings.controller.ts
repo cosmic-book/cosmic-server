@@ -1,5 +1,5 @@
 import { TReading } from '@/@types';
-import { BooksService, ReadingsService, RefBookGendersService } from '@/database/_services';
+import { BooksService, ReadingsService, RefBookGendersService, UsersService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
 
@@ -17,9 +17,7 @@ export class ReadingsController {
       const readings = await ReadingsService.getAll(limit?.toString());
 
       if (!readings) {
-        return res.status(HttpStatus.NO_CONTENT).json({
-          message: 'Nenhuma leitura encontrada'
-        });
+        return res.status(HttpStatus.NO_CONTENT).json({ message: 'Nenhuma leitura encontrada' });
       }
 
       return res.status(HttpStatus.OK).json({
@@ -36,15 +34,19 @@ export class ReadingsController {
   // GET: /readings/user/1
   public static async findByUser(req: Request, res: Response): Promise<Response<TReading[]>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const readings = await ReadingsService.getByUser(parseInt(id));
+      const hasUser = !!(await UsersService.getById(id));
+
+      if (!hasUser) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Usuário não encontrado' });
+      }
+
+      const readings = await ReadingsService.getByUser(id);
 
       const { totalReadPages, totalReviews } = await ReadingsController.getBookDetails(readings);
 
@@ -64,15 +66,19 @@ export class ReadingsController {
   // GET: /readings/favorite/1
   public static async findFavoritesByUser(req: Request, res: Response): Promise<Response<TReading[]>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const favorites = await ReadingsService.getFavoritesByUser(parseInt(id));
+      const hasUser = !!(await UsersService.getById(id));
+
+      if (!hasUser) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Usuário não encontrado' });
+      }
+
+      const favorites = await ReadingsService.getFavoritesByUser(id);
 
       await ReadingsController.getBookDetails(favorites);
 
@@ -90,20 +96,16 @@ export class ReadingsController {
   // GET: /readings/1
   public static async findById(req: Request, res: Response): Promise<Response<TReading>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const reading = await ReadingsService.getById(parseInt(id));
+      const reading = await ReadingsService.getById(id);
 
       if (!reading) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Leitura não encontrada'
-        });
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Leitura não encontrada' });
       }
 
       const book = await BooksService.getById(reading.id_book);
@@ -131,22 +133,18 @@ export class ReadingsController {
       const existingItem = await ReadingsService.isAdded(reading.id_user, reading.id_book);
 
       if (existingItem) {
-        return res.status(HttpStatus.CONFLICT).json({
-          message: 'Leitura já presente na estante'
-        });
+        return res.status(HttpStatus.CONFLICT).json({ message: 'Leitura já presente na estante' });
       }
 
       const id = await ReadingsService.insert(reading);
 
-      if (id) {
-        reading.id = id;
-
-        return res.status(HttpStatus.CREATED).json(reading);
+      if (!id) {
+        throw new Error('Erro ao adicionar leitura');
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao adicionar leitura na estante'
-      });
+      reading.id = id;
+
+      return res.status(HttpStatus.CREATED).json(reading);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -157,26 +155,28 @@ export class ReadingsController {
   // PUT: /readings/1
   public static async update(req: Request, res: Response): Promise<Response<TReading>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
       const reading: TReading = req.body;
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const result = await ReadingsService.update(parseInt(id), reading);
+      const hasReading = !!(await ReadingsService.getById(id));
 
-      if (result) {
-        reading.id = parseInt(id);
-
-        return res.status(HttpStatus.OK).json(reading);
+      if (!hasReading) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Leitura não encontrada' });
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao atualizar a leitura da estante'
-      });
+      const result = await ReadingsService.update(id, reading);
+
+      if (!result) {
+        throw new Error('Erro ao atualizar leitura');
+      }
+
+      reading.id = id;
+
+      return res.status(HttpStatus.OK).json(reading);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -187,25 +187,25 @@ export class ReadingsController {
   // DELETE: /readings/1
   public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const result = await ReadingsService.delete(parseInt(id));
+      const hasReading = !!(await ReadingsService.getById(id));
 
-      if (!result) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Leitura não encontrada'
-        });
+      if (!hasReading) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Leitura não encontrada' });
       }
 
-      return res.status(HttpStatus.OK).json({
-        message: 'Leitura deletada com sucesso'
-      });
+      const isDeleted = await ReadingsService.delete(id);
+
+      if (!isDeleted) {
+        throw new Error('Erro ao deletar leitura');
+      }
+
+      return res.status(HttpStatus.OK).json({ message: 'Leitura deletada com sucesso' });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message

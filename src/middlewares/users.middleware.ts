@@ -11,7 +11,7 @@ export async function UsersMiddleware(req: Request, res: Response, next: NextFun
 
     const emailRegex = new RegExp('^[a-z0-9.]+@[a-z0-9]+.[a-z]+(.[a-z]+)?$', 'i');
 
-    if (!name || !email || !birthday || !gender) {
+    if (!name || !email || !birthday || gender < 0) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });

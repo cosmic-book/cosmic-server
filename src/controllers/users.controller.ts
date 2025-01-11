@@ -11,9 +11,7 @@ export class UsersController {
       const users = await UsersService.getAll();
 
       if (!users) {
-        return res.status(HttpStatus.NO_CONTENT).json({
-          message: 'Nenhum usuário encontrado'
-        });
+        return res.status(HttpStatus.NO_CONTENT).json({ message: 'Nenhum usuário encontrado' });
       }
 
       return res.status(HttpStatus.OK).json(users);
@@ -27,20 +25,16 @@ export class UsersController {
   // GET: /users/1
   public static async findById(req: Request, res: Response): Promise<Response<TUser>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const user = await UsersService.getById(parseInt(id));
+      const user = await UsersService.getById(id);
 
       if (!user) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Usuário não encontrado'
-        });
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Usuário não encontrado' });
       }
 
       return res.status(HttpStatus.OK).json(user);
@@ -59,32 +53,26 @@ export class UsersController {
       const hasUsername = !!(await UsersService.getByUsername(user.username));
 
       if (hasUsername) {
-        return res.status(HttpStatus.CONFLICT).json({
-          message: 'Nome de usuário já existente'
-        });
+        return res.status(HttpStatus.CONFLICT).json({ message: 'Nome de usuário já existente' });
       }
 
       const hasEmail = !!(await UsersService.getByEmail(user.email));
 
       if (hasEmail) {
-        return res.status(HttpStatus.CONFLICT).json({
-          message: 'E-mail já em uso'
-        });
+        return res.status(HttpStatus.CONFLICT).json({ message: 'E-mail já em uso' });
       }
 
       user.password = await bcrypt.hash(user.password, 10);
 
       const id = await UsersService.insert(user);
 
-      if (id) {
-        user.id = id;
-
-        return res.status(HttpStatus.CREATED).json(user);
+      if (!id) {
+        throw new Error('Erro ao adicionar usuário');
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao adicionar usuário'
-      });
+      user.id = id;
+
+      return res.status(HttpStatus.CREATED).json(user);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -95,27 +83,30 @@ export class UsersController {
   // PUT: /users/1
   public static async update(req: Request, res: Response): Promise<Response<TUser>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
       const user: TUser = req.body;
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
+      }
+
+      const hasUser = !!(await UsersService.getById(id));
+
+      if (!hasUser) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Usuário não encontrado' });
       }
 
       user.password = await bcrypt.hash(user.password, 10);
 
-      const result = await UsersService.update(parseInt(id), user);
+      const result = await UsersService.update(id, user);
 
-      if (result) {
-        user.id = parseInt(id);
-        return res.status(HttpStatus.OK).json(user);
+      if (!result) {
+        throw new Error('Erro ao atualizar usuário');
       }
 
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erro ao atualizar usuário'
-      });
+      user.id = id;
+
+      return res.status(HttpStatus.OK).json(user);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message
@@ -125,13 +116,17 @@ export class UsersController {
 
   // PUT: /users/password/1
   public static async changePassword(req: Request, res: Response): Promise<Response<TUser>> {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     let { newPassword } = req.body;
+
+    if (isNaN(id)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
+    }
 
     newPassword = await bcrypt.hash(newPassword, 10);
 
-    const user = await UsersService.getById(parseInt(id));
-    const data = await UsersService.updatePassword(parseInt(id), newPassword);
+    const user = await UsersService.getById(id);
+    const data = await UsersService.updatePassword(id, newPassword);
 
     if (user && data) {
       user.password = newPassword;
@@ -144,25 +139,19 @@ export class UsersController {
   // DELETE: /users/1
   public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const result = await UsersService.delete(parseInt(id));
+      const result = await UsersService.delete(id);
 
       if (!result) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Usuário não encontrado'
-        });
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Usuário não encontrado' });
       }
 
-      return res.status(HttpStatus.OK).json({
-        message: 'Usuário deletado com sucesso'
-      });
+      return res.status(HttpStatus.OK).json({ message: 'Usuário deletado com sucesso' });
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message

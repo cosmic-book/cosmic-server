@@ -23,24 +23,28 @@ export class ProfileController {
   // GET: /profile/1
   public static async findInfosByUser(req: Request, res: Response): Promise<Response<TProfileInfos>> {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id);
       const { category, status, type, rating } = req.query;
 
-      if (!id || !parseInt(id)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Parâmetro inválido'
-        });
+      if (isNaN(id)) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const filters: TBookshelfFilter = {
-        category: category !== 'undefined' ? parseInt(category as string) : undefined,
-        status: status !== 'undefined' ? parseInt(status as string) : undefined,
-        type: type !== 'undefined' ? parseInt(type as string) : undefined,
-        rating: rating !== 'undefined' ? parseInt(rating as string) : undefined
+      const parseQueryParam = (param: unknown): number | undefined => {
+        const parsed = parseInt(param as string);
+
+        return !isNaN(parsed) ? parsed : undefined;
       };
 
-      const allReadings = await ReadingsService.getByUser(parseInt(id));
-      const filteredReadings = await ReadingsService.getByUserFiltered(parseInt(id), filters);
+      const filters: TBookshelfFilter = {
+        category: parseQueryParam(category),
+        status: parseQueryParam(status),
+        type: parseQueryParam(type),
+        rating: parseQueryParam(rating)
+      };
+
+      const allReadings = await ReadingsService.getByUser(id);
+      const filteredReadings = await ReadingsService.getByUserFiltered(id, filters);
 
       const { favorites, totalReadPages, totalReviews } = await ProfileController.getBookDetails(allReadings);
 
@@ -48,7 +52,7 @@ export class ProfileController {
         await ProfileController.getBookDetails(filteredReadings);
       }
 
-      const lastHistory = await HistoriesService.getLastByUser(parseInt(id));
+      const lastHistory = await HistoriesService.getLastByUser(id);
 
       if (lastHistory) {
         const lastHistoryReading = await ReadingsService.getById(lastHistory.id_reading);

@@ -6,27 +6,41 @@ const table = TableNames.histories;
 
 export class HistoriesService {
   public static async getAll(limit: string = '300'): Promise<THistory[]> {
-    return Knex(table).select('*').limit(parseInt(limit));
+    return Knex(table).select('*').where('is_deleted', false).limit(parseInt(limit));
   }
 
   public static async getByReading(reading_id: number): Promise<THistory[]> {
-    return Knex(table).select('*').where('id_reading', reading_id).orderBy('date', 'desc');
+    return Knex(table)
+      .select('*')
+      .where('id_reading', reading_id)
+      .andWhere('is_deleted', false)
+      .orderBy('date', 'desc');
   }
 
   public static async getLastByReading(reading_id: number): Promise<THistory> {
-    const [result] = await Knex(table).select('*').where('id_reading', reading_id).orderBy('date', 'desc').limit(1);
+    const [result] = await Knex(table)
+      .select('*')
+      .where('id_reading', reading_id)
+      .andWhere('is_deleted', false)
+      .orderBy('date', 'desc')
+      .limit(1);
 
     return result || undefined;
   }
 
   public static async getLastByUser(user_id: number): Promise<THistory> {
-    const [result] = await Knex(table).select('*').where('id_user', user_id).orderBy('date', 'desc').limit(1);
+    const [result] = await Knex(table)
+      .select('*')
+      .where('id_user', user_id)
+      .andWhere('is_deleted', false)
+      .orderBy('date', 'desc')
+      .limit(1);
 
     return result || undefined;
   }
 
   public static async getById(id: number): Promise<THistory | undefined> {
-    const [result] = await Knex(table).select('*').where('id', id);
+    const [result] = await Knex(table).select('*').where('id', id).andWhere('is_deleted', false);
 
     return result || undefined;
   }
@@ -46,7 +60,7 @@ export class HistoriesService {
   }
 
   public static async delete(id: number): Promise<number | undefined> {
-    const result = await Knex(table).delete().where('id', id);
+    const result = await Knex(table).update({ is_deleted: true }).where('id', id);
 
     return result || undefined;
   }

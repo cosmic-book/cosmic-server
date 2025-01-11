@@ -11,4 +11,5 @@ export type TBook = {
   genders?: Gender[];
   publisher: string;
   cover?: string;
+  is_deleted?: boolean;
 };

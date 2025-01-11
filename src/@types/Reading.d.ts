@@ -14,5 +14,6 @@ export type TReading = {
   favorite?: boolean;
   start_date?: Date;
   finish_date?: Date;
+  is_deleted?: boolean;
   book?: TBook;
 };

@@ -10,4 +10,5 @@ export type TUser = {
   image?: string;
   profile?: number;
   password: string;
+  is_deleted?: boolean;
 };
