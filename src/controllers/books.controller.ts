@@ -1,6 +1,7 @@
 import { TBook } from '@/@types';
 import { BooksService, RefBookGendersService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
+import axios from 'axios';
 import { Request, Response } from 'express';
 
 interface IBookData {
@@ -53,6 +54,72 @@ export class BooksController {
         books,
         totalItems: books.length
       });
+    } catch (err: unknown) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: (err as Error).message
+      });
+    }
+  }
+
+  // GET: /books/search/v2
+  public static async searchOpenLibrary(req: Request<IBookData>, res: Response): Promise<Response<any>> {
+    try {
+      let term = req.query.term?.toString();
+
+      if (!term) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
+      }
+
+      term = term.trim().replace(/\s/g, '+');
+
+      const response = await axios.get(`https://openlibrary.org/search.json?q=${term}&language=por`);
+
+      if (!response.data.docs || response.data.docs.length === 0) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Nenhum livro encontrado' });
+      }
+
+      const book = response.data.docs[0];
+
+      if (!book.edition_key || book.edition_key.length === 0) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Nenhuma edição encontrada' });
+      }
+
+      // Consulta todas as edições em paralelo
+      const editionsData = await Promise.all(
+        book.edition_key.map(
+          async (edition: any) =>
+            await axios
+              .get(`https://openlibrary.org/books/${edition}.json`)
+              .catch(() => console.log(`Erro ao buscar edição: ${edition}`))
+        )
+      );
+
+      const editions = editionsData.filter((result) => result?.data).map((result) => result!.data);
+
+      // Filtra edições que suportam o idioma português
+      const filteredEdit = editions.filter((edition) =>
+        edition.languages?.some((lang: { key: string }) => lang.key.trim().toLowerCase() === '/languages/por')
+      );
+
+      if (filteredEdit.length === 0) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Nenhuma edição encontrada em português' });
+      }
+
+      // Mapeando apenas as edições em português
+      const books: Partial<TBook>[] = filteredEdit.map((edition: any) => ({
+        title: edition?.title,
+        author: book.author_name?.join(', ') || 'Autor desconhecido',
+        year: edition?.publish_date,
+        pages: edition.number_of_pages,
+        isbn_10: edition.isbn_10?.[0],
+        isbn_13: edition.isbn_13?.[0],
+        description: edition?.description || '',
+        language: 'Português',
+        publisher: edition.publishers?.[0],
+        cover: edition.covers ? `https://covers.openlibrary.org/b/id/${edition.covers[0]}-L.jpg` : undefined
+      }));
+
+      return res.status(HttpStatus.OK).json(books);
     } catch (err: unknown) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: (err as Error).message

@@ -1,6 +1,6 @@
 {
   "name": "cosmic-server",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "",
   "main": "server.ts",
   "author": "NandoFilter",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "eslint-config-prettier": "^8.5.0",
