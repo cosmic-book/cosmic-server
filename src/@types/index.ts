@@ -1,6 +1,7 @@
 export { TAuthor } from './Author';
 export { TBook } from './Book';
 export { TBookshelfFilter } from './BookshelfFilter';
+export { TEdition } from './Edition';
 export { TGender } from './Gender';
 export { THistory } from './History';
 export { TReading } from './Reading';
