@@ -1,3 +1,4 @@
+export { AuthorsService } from './authors.service';
 export { BooksService } from './books.service';
 export { GendersService } from './genders.service';
 export { HistoriesService } from './histories.service';

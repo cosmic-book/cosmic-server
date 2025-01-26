@@ -1,3 +1,4 @@
+export { TAuthor } from './Author';
 export { TBook } from './Book';
 export { TBookshelfFilter } from './BookshelfFilter';
 export { TGender } from './Gender';

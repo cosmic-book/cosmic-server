@@ -1,4 +1,5 @@
 export enum TableNames {
+  authors = 'authors',
   books = 'books',
   genders = 'genders',
   histories = 'histories',

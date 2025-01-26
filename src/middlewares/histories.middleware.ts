@@ -31,7 +31,7 @@ export async function HistoriesMiddleware(req: Request, res: Response, next: Nex
       });
     }
 
-    if (date && moment(date).isAfter(new Date())) {
+    if (moment(date).isAfter(new Date())) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'A data do registro não pode ser maior que a data atual'
       });

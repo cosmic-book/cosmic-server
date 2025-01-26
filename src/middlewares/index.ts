@@ -1,4 +1,5 @@
 export { AuthMiddleware } from './auth.middleware';
+export { AuthorsMiddleware } from './authors.middleware';
 export { BooksMiddleware } from './books.middleware';
 export { GendersMiddleware } from './genders.middleware';
 export { HistoriesMiddleware } from './histories.middleware';
