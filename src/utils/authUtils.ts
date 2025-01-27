@@ -21,23 +21,18 @@ export function checkToken(token: string): boolean {
 export function generateToken(user: TUser): IToken {
   try {
     const secret = process.env.SECRET_KEY;
+    const expTime = Math.floor(Date.now() / 1000) + 60 * 60;
 
-    let result: IToken = {
-      token: '',
-      exp: new Date(Date.now() + 1 * 60 * 60 * 1000) // 1 hour
-    };
+    let token = '';
 
     if (secret) {
-      result.token = jwt.sign(
-        {
-          id: user.id,
-          exp: result.exp.getTime()
-        },
-        secret
-      );
+      token = jwt.sign({ id: user.id, exp: expTime }, secret);
     }
 
-    return result;
+    return {
+      token,
+      exp: new Date(expTime * 1000)
+    };
   } catch (err: any) {
     throw (err as Error).message;
   }
