@@ -1,17 +1,12 @@
 import { TBook } from '@/@types';
 import { BooksService, RefBookGendersService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
-import axios from 'axios';
+import { IFilterModel } from '@/interfaces';
 import { Request, Response } from 'express';
-
-interface IBookData {
-  term?: string;
-  limit?: string;
-}
 
 export class BooksController {
   // GET: /books
-  public static async findAll(req: Request<IBookData>, res: Response): Promise<Response<TBook[]>> {
+  public static async findAll(req: Request<IFilterModel>, res: Response): Promise<Response<TBook[]>> {
     try {
       const { limit } = req.query;
 
@@ -35,97 +30,35 @@ export class BooksController {
   }
 
   // GET: /books/search
-  public static async search(req: Request<IBookData>, res: Response): Promise<Response<TBook[]>> {
-    try {
-      const { term } = req.query;
+  // public static async search(req: Request<IFilterModel>, res: Response): Promise<Response<TBook[]>> {
+  //   try {
+  //     const term = req.query.term?.toString();
 
-      const books = await BooksService.search(term?.toString());
+  //     if (!term) {
+  //       return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
+  //     }
 
-      for (const book of books) {
-        if (book.id) {
-          book.genders = await RefBookGendersService.getByBook(book.id);
-        }
+  //     const books = await BooksService.search(term?.toString());
 
-        //book.cover = `https://www.googleapis.com/books/v1/volumes?q=isbn:${book.isbn_13}&key=${process.env.GOOGLE_BOOKS_API_KEY}`;
-        book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
-      }
+  //     for (const book of books) {
+  //       if (book.id) {
+  //         book.genders = await RefBookGendersService.getByBook(book.id);
+  //       }
 
-      return res.status(HttpStatus.OK).json({
-        books,
-        totalItems: books.length
-      });
-    } catch (err: unknown) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: (err as Error).message
-      });
-    }
-  }
+  //       //book.cover = `https://www.googleapis.com/books/v1/volumes?q=isbn:${book.isbn_13}&key=${process.env.GOOGLE_BOOKS_API_KEY}`;
+  //       book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
+  //     }
 
-  // GET: /books/search/v2
-  public static async searchOpenLibrary(req: Request<IBookData>, res: Response): Promise<Response<any>> {
-    try {
-      let term = req.query.term?.toString();
-
-      if (!term) {
-        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
-      }
-
-      term = term.trim().replace(/\s/g, '+');
-
-      const response = await axios.get(`https://openlibrary.org/search.json?q=${term}&language=por`);
-
-      if (!response.data.docs || response.data.docs.length === 0) {
-        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Nenhum livro encontrado' });
-      }
-
-      const book = response.data.docs[0];
-
-      if (!book.edition_key || book.edition_key.length === 0) {
-        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Nenhuma edição encontrada' });
-      }
-
-      // Consulta todas as edições em paralelo
-      const editionsData = await Promise.all(
-        book.edition_key.map(
-          async (edition: any) =>
-            await axios
-              .get(`https://openlibrary.org/books/${edition}.json`)
-              .catch(() => console.log(`Erro ao buscar edição: ${edition}`))
-        )
-      );
-
-      const editions = editionsData.filter((result) => result?.data).map((result) => result!.data);
-
-      // Filtra edições que suportam o idioma português
-      const filteredEdit = editions.filter((edition) =>
-        edition.languages?.some((lang: { key: string }) => lang.key.trim().toLowerCase() === '/languages/por')
-      );
-
-      if (filteredEdit.length === 0) {
-        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Nenhuma edição encontrada em português' });
-      }
-
-      // Mapeando apenas as edições em português
-      const books: Partial<TBook>[] = filteredEdit.map((edition: any) => ({
-        title: edition?.title,
-        author: book.author_name?.join(', ') || 'Autor desconhecido',
-        year: edition?.publish_date,
-        pages: edition.number_of_pages,
-        isbn_10: edition.isbn_10?.[0],
-        isbn_13: edition.isbn_13?.[0],
-        description: edition?.description || '',
-        language: 'Português',
-        publisher: edition.publishers?.[0],
-        cover: edition.covers ? `https://covers.openlibrary.org/b/id/${edition.covers[0]}-L.jpg` : undefined
-      }));
-
-      return res.status(HttpStatus.OK).json(books);
-    } catch (err: unknown) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: (err as Error).message
-      });
-    }
-  }
+  //     return res.status(HttpStatus.OK).json({
+  //       books,
+  //       totalItems: books.length
+  //     });
+  //   } catch (err: unknown) {
+  //     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+  //       message: (err as Error).message
+  //     });
+  //   }
+  // }
 
   // GET: /books/1
   public static async findById(req: Request, res: Response): Promise<Response<TBook>> {
@@ -155,7 +88,7 @@ export class BooksController {
     try {
       const book: TBook = req.body;
 
-      const existingBook = !!(await BooksService.getByISBN(book));
+      const existingBook = !!(await BooksService.getById(book.id));
 
       if (existingBook) {
         return res.status(HttpStatus.CONFLICT).json({ message: 'Livro já cadastrado' });
@@ -210,7 +143,7 @@ export class BooksController {
   }
 
   // DELETE: /books/1
-  public static async delete(req: Request, res: Response): Promise<Response> {
+  public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
       const id = parseInt(req.params.id);
 

@@ -15,25 +15,15 @@ export class BooksService {
     return result || undefined;
   }
 
-  public static async getByISBN(book: TBook): Promise<TBook | undefined> {
-    const [result] = await Knex(table)
-      .select('*')
-      .where('isbn_13', book.isbn_13)
-      .orWhere('isbn_10', book.isbn_10)
-      .andWhere('is_deleted', false);
+  // public static async search(term?: string): Promise<Partial<TBook>[]> {
+  //   const result = await Knex(table)
+  //     .select('*')
+  //     .where('title', 'like', `%${term}%`)
+  //     .orWhere('author', 'like', `%${term}%`)
+  //     .andWhere('is_deleted', false);
 
-    return result || undefined;
-  }
-
-  public static async search(term?: string): Promise<Partial<TBook>[]> {
-    const result = await Knex(table)
-      .select('*')
-      .where('title', 'like', `%${term}%`)
-      .orWhere('author', 'like', `%${term}%`)
-      .andWhere('is_deleted', false);
-
-    return result;
-  }
+  //   return result;
+  // }
 
   public static async insert(book: TBook): Promise<number | undefined> {
     const [result] = await Knex(table).insert(book);

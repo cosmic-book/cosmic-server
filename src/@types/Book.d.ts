@@ -1,15 +1,15 @@
+import { TAuthor } from './Author';
+import { TEdition } from './Edition';
+
 export type TBook = {
   id: number;
   title: string;
-  author?: string;
-  year?: number;
-  pages: number;
-  isbn_13?: string;
-  isbn_10?: string;
-  description: string;
+  release_date: Date;
   language: string;
-  genders?: Gender[];
-  publisher: string;
+  ol_book_key?: string;
   cover?: string;
   is_deleted?: boolean;
+  total_editions?: number;
+  authors?: TAuthor[];
+  editions?: TEdition[];
 };

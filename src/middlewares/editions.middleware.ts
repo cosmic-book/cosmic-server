@@ -1,5 +1,5 @@
 import { TEdition } from '@/@types';
-import { AuthorsService, BooksService } from '@/database/_services';
+import { BooksService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
@@ -8,26 +8,19 @@ export async function EditionsMiddleware(req: Request, res: Response, next: Next
   const value: TEdition = req.body;
 
   if (value) {
-    let { title, id_author, id_book, publish_date, num_pages, isbn_13, isbn_10, language } = value;
+    let { title, id_book, publish_date, num_pages, isbn_13, isbn_10, language } = value;
 
-    if (!title || !id_author || !id_book || !publish_date || !num_pages || !language) {
+    if (!title || !id_book || !publish_date || !num_pages || !language) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });
     }
 
     const book = await BooksService.getById(id_book);
-    const author = await AuthorsService.getById(id_author);
 
     if (!book) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Livro não encontrado'
-      });
-    }
-
-    if (!author) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Autor não encontrado'
       });
     }
 
@@ -55,7 +48,15 @@ export async function EditionsMiddleware(req: Request, res: Response, next: Next
       });
     }
 
-    if (moment(publish_date).isAfter(new Date())) {
+    const publishDate = moment(publish_date);
+
+    if (publishDate.isBefore(book.release_date)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Data da edição não é compatível com o lançamento do livro'
+      });
+    }
+
+    if (publishDate.isAfter(new Date())) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'A data de publicação não pode ser maior que a data atual'
       });

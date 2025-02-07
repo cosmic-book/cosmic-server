@@ -1,28 +1,32 @@
 import { TBook } from '@/@types';
+import { AuthorsService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
+import moment from 'moment';
 
 export async function BooksMiddleware(req: Request, res: Response, next: NextFunction) {
   const value: TBook = req.body;
 
   if (value) {
-    let { title, pages, isbn_13, isbn_10, description, language, publisher } = value;
+    let { title, release_date, language } = value;
 
-    if (!title || !pages || !description || !language || !publisher) {
+    if (!title || !release_date || !language) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });
     }
 
-    if (isbn_13 && isbn_13.length !== 13) {
+    const releaseDate = moment(release_date);
+
+    if (releaseDate.isAfter(new Date())) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Valor de ISBN-13 inválido'
+        message: 'A data de lançamento não pode ser maior que a data atual'
       });
     }
 
-    if (isbn_10 && isbn_10.length !== 10) {
+    if (language.length !== 3) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Valor de ISBN-10 inválido'
+        message: 'Idioma inválido'
       });
     }
 

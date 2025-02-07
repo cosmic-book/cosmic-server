@@ -1,8 +1,9 @@
+import { TBook } from './Book';
+
 export type TEdition = {
   id: number;
   title: string;
   id_book: number;
-  id_author: number;
   publish_date?: Date;
   num_pages: number;
   isbn_13?: string;
@@ -14,5 +15,4 @@ export type TEdition = {
   cover?: string;
   is_deleted?: boolean;
   book?: TBook;
-  author?: TAuthor;
 };
