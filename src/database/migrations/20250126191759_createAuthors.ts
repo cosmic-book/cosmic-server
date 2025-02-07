@@ -6,13 +6,13 @@ export async function up(knex: Knex): Promise<void> {
 
   if (!hasTable) {
     return knex.schema.createTable(TableNames.authors, (table) => {
-      table.increments('id').unsigned().primary(),
-        table.string('name', 80).notNullable(),
-        table.date('birth_date').notNullable(),
-        table.date('death_date'),
-        table.text('bio'),
-        table.string('ol_author_key', 15),
-        table.boolean('is_deleted').notNullable().defaultTo(false);
+      table.increments('id').unsigned().primary();
+      table.string('name', 80).notNullable();
+      table.date('birth_date').notNullable();
+      table.date('death_date');
+      table.text('bio');
+      table.string('ol_author_key', 15);
+      table.boolean('is_deleted').notNullable().defaultTo(false);
     });
   }
 }

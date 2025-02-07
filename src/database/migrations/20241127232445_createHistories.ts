@@ -6,16 +6,16 @@ export async function up(knex: Knex): Promise<void> {
 
   if (!hasTable) {
     return knex.schema.createTable(TableNames.histories, (table) => {
-      table.increments('id').unsigned().primary(),
-        table.integer('id_reading').unsigned().notNullable(),
-        table.date('date').notNullable(),
-        table.integer('read_pages').notNullable().defaultTo(0),
-        table.string('comment', 120),
-        table
-          .foreign('id_reading', 'fk_idReadingHistory')
-          .references('id')
-          .inTable(TableNames.readings)
-          .onDelete('CASCADE');
+      table.increments('id').unsigned().primary();
+      table.integer('id_reading').unsigned().notNullable();
+      table.date('date').notNullable();
+      table.integer('read_pages').notNullable().defaultTo(0);
+      table.string('comment', 120);
+      table
+        .foreign('id_reading', 'fk_histories_idReading')
+        .references('id')
+        .inTable(TableNames.readings)
+        .onDelete('CASCADE');
     });
   }
 }
