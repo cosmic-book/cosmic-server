@@ -1,5 +1,5 @@
 import { THistory } from '@/@types';
-import { BooksService, ReadingsService, UsersService } from '@/database/_services';
+import { EditionsService, ReadingsService, UsersService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
@@ -37,9 +37,9 @@ export async function HistoriesMiddleware(req: Request, res: Response, next: Nex
       });
     }
 
-    const book = await BooksService.getById(reading.id_book);
+    const edition = await EditionsService.getById(reading.id_edition);
 
-    if (book && (read_pages < 0 || read_pages > book.pages)) {
+    if (edition && (read_pages < 0 || read_pages > edition.num_pages)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Quantidade de Páginas inválida'
       });

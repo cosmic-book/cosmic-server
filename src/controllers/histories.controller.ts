@@ -1,9 +1,8 @@
-import { THistory, TReading } from '@/@types';
-import { BooksService, HistoriesService, ReadingsService, RefBookGendersService } from '@/database/_services';
+import { THistory } from '@/@types';
+import { EditionsService, HistoriesService, ReadingsService } from '@/database/_services';
 import { ReadingStatus } from '@/enums';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
-import moment from 'moment';
 
 export class HistoriesController {
   // GET: /histories
@@ -181,14 +180,14 @@ export class HistoriesController {
     const reading = await ReadingsService.getById(history.id_reading);
 
     if (reading) {
-      const book = await BooksService.getById(reading.id_book);
+      const edition = await EditionsService.getById(reading.id_edition);
 
       if (reading.status === ReadingStatus.TO_READ) {
         reading.status = ReadingStatus.READING;
         reading.start_date = new Date();
       }
 
-      if (book && history.read_pages === book.pages) {
+      if (edition && history.read_pages === edition.num_pages) {
         reading.status = ReadingStatus.FINISHED;
         reading.finish_date = new Date();
       }

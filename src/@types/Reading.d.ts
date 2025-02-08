@@ -1,10 +1,11 @@
 import { ReadingCategory, ReadingStatus, ReadingType } from '@/enums';
-import { TBook } from './Book';
+import { TEdition } from './Edition';
+import { TUser } from './User';
 
 export type TReading = {
   id: number;
   id_user: number;
-  id_book: number;
+  id_edition: number;
   status: ReadingStatus;
   type: ReadingType;
   category: ReadingCategory;
@@ -15,5 +16,6 @@ export type TReading = {
   start_date?: Date;
   finish_date?: Date;
   is_deleted?: boolean;
-  book?: TBook;
+  user?: TUser;
+  edition?: TEdition;
 };

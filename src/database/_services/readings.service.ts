@@ -76,11 +76,11 @@ export class ReadingsService {
     return result || undefined;
   }
 
-  public static async isAdded(id_user: number, id_book: number): Promise<boolean> {
+  public static async doesExist(id_user: number, id_edition: number): Promise<boolean> {
     const [result] = await Knex(table)
       .select('*')
       .where('id_user', id_user)
-      .andWhere('id_book', id_book)
+      .andWhere('id_edition', id_edition)
       .andWhere('is_deleted', false);
 
     return !!result;

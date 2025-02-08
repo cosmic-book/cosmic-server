@@ -1,5 +1,5 @@
 import { TBookshelfFilter, THistory, TReading } from '@/@types';
-import { BooksService, HistoriesService, ReadingsService, RefBookGendersService } from '@/database/_services';
+import { EditionsService, HistoriesService, ReadingsService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
 
@@ -58,12 +58,11 @@ export class ProfileController {
         const lastHistoryReading = await ReadingsService.getById(lastHistory.id_reading);
 
         if (lastHistoryReading) {
-          const lastHistoryBook = await BooksService.getById(lastHistoryReading.id_book);
+          const lastHistoryEdition = await EditionsService.getById(lastHistoryReading.id_edition);
 
-          if (lastHistoryBook) {
-            lastHistoryBook.cover = `https://covers.openlibrary.org/b/isbn/${lastHistoryBook.isbn_13}-M.jpg?default=false`;
-
-            lastHistoryReading.book = lastHistoryBook;
+          if (lastHistoryEdition) {
+            lastHistoryEdition.cover = `https://covers.openlibrary.org/b/isbn/${lastHistoryEdition.isbn_13}-M.jpg?default=false`;
+            lastHistoryReading.edition = lastHistoryEdition;
             lastHistory.reading = lastHistoryReading;
           }
         }
@@ -94,13 +93,12 @@ export class ProfileController {
 
     if (readings) {
       for (const reading of readings) {
-        const book = await BooksService.getById(reading.id_book);
+        const edition = await EditionsService.getById(reading.id_edition);
 
-        if (book && book.id) {
-          book.genders = await RefBookGendersService.getByBook(book.id);
-          book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
+        if (edition && edition.id) {
+          edition.cover = `https://covers.openlibrary.org/b/isbn/${edition.isbn_13}-M.jpg?default=false`;
 
-          reading.book = book;
+          reading.edition = edition;
         }
 
         if (reading.favorite) {
