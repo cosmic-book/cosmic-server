@@ -1,16 +1,12 @@
 import { TBook } from '@/@types';
-import { BooksService, RefBookGendersService } from '@/database/_services';
+import { BooksService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
+import { IFilterModel } from '@/interfaces';
 import { Request, Response } from 'express';
-
-interface IBookData {
-  term?: string;
-  limit?: string;
-}
 
 export class BooksController {
   // GET: /books
-  public static async findAll(req: Request<IBookData>, res: Response): Promise<Response<TBook[]>> {
+  public static async findAll(req: Request<IFilterModel>, res: Response): Promise<Response<TBook[]>> {
     try {
       const { limit } = req.query;
 
@@ -34,31 +30,35 @@ export class BooksController {
   }
 
   // GET: /books/search
-  public static async search(req: Request<IBookData>, res: Response): Promise<Response<TBook[]>> {
-    try {
-      const { term } = req.query;
+  // public static async search(req: Request<IFilterModel>, res: Response): Promise<Response<TBook[]>> {
+  //   try {
+  //     const term = req.query.term?.toString();
 
-      const books = await BooksService.search(term?.toString());
+  //     if (!term) {
+  //       return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
+  //     }
 
-      for (const book of books) {
-        if (book.id) {
-          book.genders = await RefBookGendersService.getByBook(book.id);
-        }
+  //     const books = await BooksService.search(term?.toString());
 
-        //book.cover = `https://www.googleapis.com/books/v1/volumes?q=isbn:${book.isbn_13}&key=${process.env.GOOGLE_BOOKS_API_KEY}`;
-        book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
-      }
+  //     for (const book of books) {
+  //       if (book.id) {
+  //         book.genders = await RefBookGendersService.getByBook(book.id);
+  //       }
 
-      return res.status(HttpStatus.OK).json({
-        books,
-        totalItems: books.length
-      });
-    } catch (err: unknown) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: (err as Error).message
-      });
-    }
-  }
+  //       //book.cover = `https://www.googleapis.com/books/v1/volumes?q=isbn:${book.isbn_13}&key=${process.env.GOOGLE_BOOKS_API_KEY}`;
+  //       book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
+  //     }
+
+  //     return res.status(HttpStatus.OK).json({
+  //       books,
+  //       totalItems: books.length
+  //     });
+  //   } catch (err: unknown) {
+  //     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+  //       message: (err as Error).message
+  //     });
+  //   }
+  // }
 
   // GET: /books/1
   public static async findById(req: Request, res: Response): Promise<Response<TBook>> {
@@ -88,7 +88,7 @@ export class BooksController {
     try {
       const book: TBook = req.body;
 
-      const existingBook = !!(await BooksService.getByISBN(book));
+      const existingBook = !!(await BooksService.getById(book.id));
 
       if (existingBook) {
         return res.status(HttpStatus.CONFLICT).json({ message: 'Livro já cadastrado' });
@@ -143,7 +143,7 @@ export class BooksController {
   }
 
   // DELETE: /books/1
-  public static async delete(req: Request, res: Response): Promise<Response> {
+  public static async delete(req: Request, res: Response): Promise<Response<void>> {
     try {
       const id = parseInt(req.params.id);
 

@@ -3,6 +3,7 @@ import { generateToken } from '@/utils/authUtils';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../enums/HttpStatus';
+import moment from 'moment';
 
 export class AuthController {
   // POST: /auth/login
@@ -24,6 +25,10 @@ export class AuthController {
         }
 
         const { token, exp } = generateToken(user);
+
+        if (!token || moment(exp).isBefore(new Date())) {
+          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Erro ao gerar token' });
+        }
 
         return res.status(HttpStatus.OK).json({ token, exp, user });
       }

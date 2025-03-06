@@ -1,28 +1,37 @@
 import { TBook } from '@/@types';
+import { BooksService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
+import moment from 'moment';
 
 export async function BooksMiddleware(req: Request, res: Response, next: NextFunction) {
   const value: TBook = req.body;
 
   if (value) {
-    let { title, pages, isbn_13, isbn_10, description, language, publisher } = value;
+    let { title, first_publish_year, ol_book_key } = value;
 
-    if (!title || !pages || !description || !language || !publisher) {
+    if (!title || !first_publish_year) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });
     }
 
-    if (isbn_13 && isbn_13.length !== 13) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Valor de ISBN-13 inválido'
-      });
+    if (ol_book_key) {
+      const book = await BooksService.getByOLKey(ol_book_key);
+
+      if (book) {
+        return res.status(HttpStatus.CONFLICT).json({
+          message: 'Livro já cadastrado'
+        });
+      }
     }
 
-    if (isbn_10 && isbn_10.length !== 10) {
+    const firstPublishYear = moment(first_publish_year, 'YYYY');
+    const actualYear = moment().year();
+
+    if (firstPublishYear.isAfter(actualYear)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Valor de ISBN-10 inválido'
+        message: 'A data de publicação não pode ser maior que a data atual'
       });
     }
 

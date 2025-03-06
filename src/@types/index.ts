@@ -1,8 +1,11 @@
+export { TAuthor } from './Author';
 export { TBook } from './Book';
 export { TBookshelfFilter } from './BookshelfFilter';
+export { TEdition } from './Edition';
 export { TGender } from './Gender';
 export { THistory } from './History';
 export { TReading } from './Reading';
+export { TRefBookAuthor } from './RefBookAuthor';
 export { TRefBookGender } from './RefBookGender';
 export { TRefUserGender } from './RefUserGender';
 export { TUser } from './User';

@@ -1,5 +1,5 @@
 import { TReading } from '@/@types';
-import { BooksService, ReadingsService, RefBookGendersService, UsersService } from '@/database/_services';
+import { EditionsService, ReadingsService, UsersService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { Request, Response } from 'express';
 
@@ -108,13 +108,12 @@ export class ReadingsController {
         return res.status(HttpStatus.NOT_FOUND).json({ message: 'Leitura não encontrada' });
       }
 
-      const book = await BooksService.getById(reading.id_book);
+      const edition = await EditionsService.getById(reading.id_edition);
 
-      if (book && book.id) {
-        book.genders = await RefBookGendersService.getByBook(book.id);
-        book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
+      if (edition && edition.id) {
+        edition.cover = `https://covers.openlibrary.org/b/isbn/${edition.isbn_13}-M.jpg?default=false`;
 
-        reading.book = book;
+        reading.edition = edition;
       }
 
       return res.status(HttpStatus.OK).json(reading);
@@ -130,7 +129,7 @@ export class ReadingsController {
     try {
       const reading: TReading = req.body;
 
-      const existingItem = await ReadingsService.isAdded(reading.id_user, reading.id_book);
+      const existingItem = await ReadingsService.doesExist(reading.id_user, reading.id_edition);
 
       if (existingItem) {
         return res.status(HttpStatus.CONFLICT).json({ message: 'Leitura já presente na estante' });
@@ -219,13 +218,12 @@ export class ReadingsController {
 
     if (readings) {
       for (const reading of readings) {
-        const book = await BooksService.getById(reading.id_book);
+        const edition = await EditionsService.getById(reading.id_edition);
 
-        if (book && book.id) {
-          book.genders = await RefBookGendersService.getByBook(book.id);
-          book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
+        if (edition && edition.id) {
+          edition.cover = `https://covers.openlibrary.org/b/isbn/${edition.isbn_13}-M.jpg?default=false`;
 
-          reading.book = book;
+          reading.edition = edition;
         }
 
         if (reading.read_pages) {

@@ -7,7 +7,7 @@ const route = Router();
 route.use(AuthMiddleware);
 
 route.get('/', BooksController.findAll);
-route.get('/search', BooksController.search);
+//route.get('/search', BooksController.search);
 route.get('/:id', BooksController.findById);
 route.post('/', BooksMiddleware, BooksController.add);
 route.put('/:id', BooksMiddleware, BooksController.update);

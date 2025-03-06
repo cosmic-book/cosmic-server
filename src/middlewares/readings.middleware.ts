@@ -1,5 +1,5 @@
 import { TReading } from '@/@types';
-import { BooksService, UsersService } from '@/database/_services';
+import { EditionsService, UsersService } from '@/database/_services';
 import { ReadingStatus } from '@/enums';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
@@ -9,7 +9,7 @@ export async function ReadingsMiddleware(req: Request, res: Response, next: Next
   const value: TReading = req.body;
 
   if (value) {
-    let { id_user, id_book, type, status, category, start_date, finish_date } = value;
+    let { id_user, id_edition, type, status, category, start_date, finish_date } = value;
 
     if (!id_user) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -17,16 +17,16 @@ export async function ReadingsMiddleware(req: Request, res: Response, next: Next
       });
     }
 
-    if (!id_book) {
+    if (!id_edition) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Livro não informado'
       });
     }
 
     const user = await UsersService.getById(id_user);
-    const book = await BooksService.getById(id_book);
+    const edition = await EditionsService.getById(id_edition);
 
-    if (!user || !book || status === null || !(type >= 0 && status >= 0 && category >= 0)) {
+    if (!user || !edition || status === null || !(type >= 0 && status >= 0 && category >= 0)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });

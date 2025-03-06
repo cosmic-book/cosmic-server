@@ -1,5 +1,7 @@
 export { AuthController } from './auth.controller';
+export { AuthorsController } from './authors.controller';
 export { BooksController } from './books.controller';
+export { EditionsController } from './editions.controller';
 export { GendersController } from './genders.controller';
 export { HistoriesController } from './histories.controller';
 export { ProfileController } from './profile.controller';
