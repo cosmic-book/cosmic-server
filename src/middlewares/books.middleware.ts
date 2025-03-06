@@ -1,5 +1,5 @@
 import { TBook } from '@/@types';
-import { AuthorsService } from '@/database/_services';
+import { BooksService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
@@ -8,25 +8,30 @@ export async function BooksMiddleware(req: Request, res: Response, next: NextFun
   const value: TBook = req.body;
 
   if (value) {
-    let { title, release_date, language } = value;
+    let { title, first_publish_year, ol_book_key } = value;
 
-    if (!title || !release_date || !language) {
+    if (!title || !first_publish_year) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Informações inválidas'
       });
     }
 
-    const releaseDate = moment(release_date);
+    if (ol_book_key) {
+      const book = await BooksService.getByOLKey(ol_book_key);
 
-    if (releaseDate.isAfter(new Date())) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'A data de lançamento não pode ser maior que a data atual'
-      });
+      if (book) {
+        return res.status(HttpStatus.CONFLICT).json({
+          message: 'Livro já cadastrado'
+        });
+      }
     }
 
-    if (language.length !== 3) {
+    const firstPublishYear = moment(first_publish_year, 'YYYY');
+    const actualYear = moment().year();
+
+    if (firstPublishYear.isAfter(actualYear)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Idioma inválido'
+        message: 'A data de publicação não pode ser maior que a data atual'
       });
     }
 

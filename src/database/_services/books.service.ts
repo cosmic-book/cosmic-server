@@ -15,6 +15,12 @@ export class BooksService {
     return result || undefined;
   }
 
+  public static async getByOLKey(key: string): Promise<TBook | undefined> {
+    const [result] = await Knex(table).select('*').where('ol_book_key', key).andWhere('is_deleted', false);
+
+    return result || undefined;
+  }
+
   // public static async search(term?: string): Promise<Partial<TBook>[]> {
   //   const result = await Knex(table)
   //     .select('*')

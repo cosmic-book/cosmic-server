@@ -25,8 +25,14 @@ export class EditionsService {
     return result || undefined;
   }
 
+  public static async getByOLKey(key: string): Promise<TEdition | undefined> {
+    const [result] = await Knex(table).select('*').where('ol_edition_key', key).andWhere('is_deleted', false);
+
+    return result || undefined;
+  }
+
   public static async search(term?: string): Promise<Partial<TEdition>[]> {
-    const result = await Knex(table).select('*').where('title', 'like', `%${term}%`).andWhere('is_deleted', false);
+    const result = await Knex(table).select('*').where('title', '=', `%${term}%`).andWhere('is_deleted', false);
 
     return result;
   }

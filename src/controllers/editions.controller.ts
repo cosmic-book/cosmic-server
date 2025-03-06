@@ -1,5 +1,5 @@
 import { TEdition } from '@/@types';
-import { EditionsService } from '@/database/_services';
+import { EditionsService, OpenLibraryService } from '@/database/_services';
 import { HttpStatus } from '@/enums/HttpStatus';
 import { IFilterModel } from '@/interfaces';
 import { Request, Response } from 'express';
@@ -38,14 +38,23 @@ export class EditionsController {
         return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
       }
 
-      const editions = await EditionsService.search(term?.toString());
+      let editions = await EditionsService.search(term);
+
+      if (editions.length === 0) {
+        const olResponse = await OpenLibraryService.searchAndInsertEdition(term);
+
+        if (!olResponse) {
+          return res.status(HttpStatus.NO_CONTENT).json({ message: 'Nenhuma edição encontrada' });
+        }
+
+        editions = olResponse;
+      }
 
       for (const edition of editions) {
         // if (edition.id) {
         //   edition.genders = await RefBookGendersService.getByBook(edition.id);
         // }
 
-        //edition.cover = `https://www.googleapis.com/editions/v1/volumes?q=isbn:${edition.isbn_13}&key=${process.env.GOOGLE_BOOKS_API_KEY}`;
         edition.cover = `https://covers.openlibrary.org/b/isbn/${edition.isbn_13}-M.jpg?default=false`;
       }
 

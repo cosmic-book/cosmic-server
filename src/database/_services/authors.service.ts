@@ -15,6 +15,12 @@ export class AuthorsService {
     return result || undefined;
   }
 
+  public static async getByOLKey(key: string): Promise<TAuthor | undefined> {
+    const [result] = await Knex(table).select('*').where('ol_author_key', key).andWhere('is_deleted', false);
+
+    return result || undefined;
+  }
+
   public static async search(term?: string): Promise<Partial<TAuthor>[]> {
     const result = await Knex(table).select('*').where('name', 'like', `%${term}%`).andWhere('is_deleted', false);
 

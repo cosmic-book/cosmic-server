@@ -4,7 +4,7 @@ export type TEdition = {
   id: number;
   title: string;
   id_book: number;
-  publish_date?: Date;
+  publish_date?: string;
   num_pages: number;
   isbn_13?: string;
   isbn_10?: string;

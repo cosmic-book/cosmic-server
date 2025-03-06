@@ -3,8 +3,9 @@ import { TBook } from './Book';
 export type TAuthor = {
   id: number;
   name: string;
-  birth_date: Date;
-  death_date?: Date;
+  full_name?: string;
+  birth_date?: string;
+  death_date?: string;
   bio?: string;
   ol_author_key?: string;
   photo?: string;

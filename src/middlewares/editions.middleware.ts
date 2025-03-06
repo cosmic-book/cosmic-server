@@ -50,7 +50,7 @@ export async function EditionsMiddleware(req: Request, res: Response, next: Next
 
     const publishDate = moment(publish_date);
 
-    if (publishDate.isBefore(book.release_date)) {
+    if (publishDate.isBefore(book.first_publish_year)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Data da edição não é compatível com o lançamento do livro'
       });
