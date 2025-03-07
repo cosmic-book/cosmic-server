@@ -18,6 +18,7 @@ export async function up(knex: Knex): Promise<void> {
       table.string('publisher', 75);
       table.string('ol_edition_key', 15);
       table.boolean('is_deleted').notNullable().defaultTo(false);
+
       table.foreign('id_book', 'fk_editions_idBook').references('id').inTable(TableNames.books).onDelete('CASCADE');
     });
   }

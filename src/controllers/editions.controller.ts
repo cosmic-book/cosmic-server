@@ -51,10 +51,6 @@ export class EditionsController {
       }
 
       for (const edition of editions) {
-        // if (edition.id) {
-        //   edition.genders = await RefBookGendersService.getByBook(edition.id);
-        // }
-
         edition.cover = `https://covers.openlibrary.org/b/isbn/${edition.isbn_13}-M.jpg?default=false`;
       }
 

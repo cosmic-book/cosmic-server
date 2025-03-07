@@ -11,10 +11,11 @@ export async function up(knex: Knex): Promise<void> {
       table.string('username', 30).notNullable();
       table.string('email', 100).notNullable();
       table.date('birthday').notNullable();
-      table.string('gender', 1).notNullable();
+      table.integer('gender').notNullable().defaultTo(0);
       table.text('image');
       table.integer('profile');
       table.string('password', 64).notNullable();
+      table.boolean('is_deleted').notNullable().defaultTo(false);
     });
   }
 }

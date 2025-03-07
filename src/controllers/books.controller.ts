@@ -29,37 +29,6 @@ export class BooksController {
     }
   }
 
-  // GET: /books/search
-  // public static async search(req: Request<IFilterModel>, res: Response): Promise<Response<TBook[]>> {
-  //   try {
-  //     const term = req.query.term?.toString();
-
-  //     if (!term) {
-  //       return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro inválido' });
-  //     }
-
-  //     const books = await BooksService.search(term?.toString());
-
-  //     for (const book of books) {
-  //       if (book.id) {
-  //         book.genders = await RefBookGendersService.getByBook(book.id);
-  //       }
-
-  //       //book.cover = `https://www.googleapis.com/books/v1/volumes?q=isbn:${book.isbn_13}&key=${process.env.GOOGLE_BOOKS_API_KEY}`;
-  //       book.cover = `https://covers.openlibrary.org/b/isbn/${book.isbn_13}-M.jpg?default=false`;
-  //     }
-
-  //     return res.status(HttpStatus.OK).json({
-  //       books,
-  //       totalItems: books.length
-  //     });
-  //   } catch (err: unknown) {
-  //     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-  //       message: (err as Error).message
-  //     });
-  //   }
-  // }
-
   // GET: /books/1
   public static async findById(req: Request, res: Response): Promise<Response<TBook>> {
     try {

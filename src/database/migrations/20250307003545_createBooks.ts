@@ -8,14 +8,9 @@ export async function up(knex: Knex): Promise<void> {
     return knex.schema.createTable(TableNames.books, (table) => {
       table.increments('id').unsigned().primary();
       table.string('title', 150).notNullable();
-      table.string('author', 200);
-      table.integer('year');
-      table.integer('pages').notNullable();
-      table.string('isbn_13', 13);
-      table.string('isbn_10', 10);
-      table.string('description', 350).notNullable();
-      table.string('language', 30).notNullable();
-      table.string('publisher', 75).notNullable();
+      table.string('first_publish_year', 4);
+      table.string('ol_book_key', 15);
+      table.boolean('is_deleted').notNullable().defaultTo(false);
     });
   }
 }

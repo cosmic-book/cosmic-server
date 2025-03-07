@@ -1,4 +1,4 @@
-export enum Gender {
+export enum UserGender {
   NOT_INFORMED,
   MASCULINE,
   FEMININE,
